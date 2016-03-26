@@ -2,25 +2,25 @@ package org.bautista.cybersafe.util.account;
 
 public class Account {
 
-	private String username;
+	private String name;
 	private String password;
-	private AccountType[] type;
+	private AccountType type;
 
-	public Account(String username, String password, AccountType... type) {
-		this.username = username;
+	public Account(String name, String password, AccountType type) {
+		this.name = name;
 		this.password = password;
 		this.type = type;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getName() {
+		return name;
 	}
 
 	public String getPassword() {
 		return password;
 	}
 
-	public AccountType[] getType() {
+	public AccountType getType() {
 		return type;
 	}
 

@@ -9,18 +9,26 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
+import org.bautista.cybersafe.ui.components.panels.AccountScroller;
+import org.bautista.cybersafe.ui.components.panels.CreateAccount;
+import org.bautista.cybersafe.ui.components.panels.LoginScreen;
+import org.bautista.cybersafe.ui.util.Scroller;
+
 public class MainUI extends JFrame implements WindowListener {
 
-	private MainUI instance;
+	private LoginScreen loginScreen;
+	private AccountScroller accountScroller;
+	private CreateAccount createAccountScreen;
 
 	public MainUI() {
 		super("Cyber Safe");
-		instance = this;
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setLayout(new BorderLayout());
 		setResizable(false);
 		setLocationRelativeTo(null);
 		confirmOnClose();
+		initiateLogin();
+		pack();
 	}
 
 	public void confirmOnClose() {
@@ -35,8 +43,33 @@ public class MainUI extends JFrame implements WindowListener {
 		});
 	}
 
-	public MainUI getInstance() {
-		return instance == null ? instance = new MainUI() : instance;
+	public void initiateLogin() {
+		loginScreen = new LoginScreen();
+		add(loginScreen);
+	}
+
+	public void openVault() {
+		remove(loginScreen);
+		accountScroller = new AccountScroller();
+		add(new Scroller(accountScroller), BorderLayout.NORTH);
+		refresh();
+	}
+
+	public void createUser() {
+		remove(loginScreen);
+		createAccountScreen = new CreateAccount();
+		add(createAccountScreen);
+		refresh();
+	}
+
+	private void clearFrame() {
+		removeAll();
+	}
+
+	private void refresh() {
+		revalidate();
+		pack();
+		repaint();
 	}
 
 	@Override
