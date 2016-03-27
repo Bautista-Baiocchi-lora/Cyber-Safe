@@ -7,7 +7,6 @@ import org.bautista.cybersafe.ui.MainUI;
 import org.bautista.cybersafe.util.Cache;
 import org.bautista.cybersafe.util.Config;
 import org.bautista.cybersafe.util.account.AccountManager;
-import org.bautista.cybersafe.util.user.User;
 import org.bautista.cybersafe.util.user.UserManager;
 
 public class Engine {
@@ -55,13 +54,27 @@ public class Engine {
 		return accountManager;
 	}
 
-	public void openVaultScreen() {
+	public void openSafeScreen() {
 		accountManager = new AccountManager(Variables.getCurrentUser());
-		ui.openVault();
+		ui.showSafe();
+	}
+
+	public void openLoginScreen() {
+		ui.showLogin();
 	}
 
 	public void openCreateUserScreen() {
-		ui.createUser();
+		ui.showCreateUser();
+	}
+
+	public void openCreateAccountScreen() {
+		ui.showCreateAccount();
+	}
+
+	public void logOut() {
+		userManager.logOut(Variables.getCurrentUser());
+		accountManager = null;
+		ui.showLogin();
 	}
 
 	public static Engine getInstance() {

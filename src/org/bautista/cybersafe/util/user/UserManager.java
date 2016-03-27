@@ -1,7 +1,5 @@
 package org.bautista.cybersafe.util.user;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -13,7 +11,8 @@ import org.bautista.cybersafe.core.Engine;
 import org.bautista.cybersafe.data.Variables;
 import org.bautista.cybersafe.util.Cache;
 import org.bautista.cybersafe.util.Config;
-import org.bautista.cybersafe.util.enctryption.Encryptor;
+import org.bautista.cybersafe.util.enctryption.util.BufferedEncryptionReader;
+import org.bautista.cybersafe.util.enctryption.util.BufferedEncryptionWriter;
 
 public class UserManager {
 	private ArrayList<User> users;
@@ -21,16 +20,21 @@ public class UserManager {
 	public UserManager() {
 		users = loadUsers();
 	}
-	
-	public boolean login(User user){
-		for(User u:users){
-			if(u.equals(user)){
+
+	public boolean logIn(User user) {
+		for (User u : users) {
+			if (u.equals(user)) {
 				Variables.setCurrentUser(u);
-				Engine.getInstance().openVaultScreen();
+				Engine.getInstance().openSafeScreen();
 				return true;
 			}
 		}
 		return false;
+	}
+
+	public void logOut(User user) {
+		Variables.setCurrentUser(null);
+		Engine.getInstance().openLoginScreen();
 	}
 
 	public boolean isNameAvaliable(String name) {
@@ -49,17 +53,17 @@ public class UserManager {
 			for (File file : userDirectory.listFiles()) {
 				try {
 					final HashMap<String, String> accountInfo = new HashMap<String, String>();
-					final BufferedReader fr = new BufferedReader(new FileReader(
-							file.getAbsolutePath() + File.separator + file.getName() + ".ucsafe"));
+					final BufferedEncryptionReader reader = new BufferedEncryptionReader(
+							new FileReader(
+									file.getAbsolutePath() + File.separator + file.getName()
+											+ ".ucsafe"),
+							Engine.getInstance().getConfig().getPropertyValue(Config.KEY),
+							Engine.getInstance().getConfig()
+									.getPropertyValue(Config.INIT_VECTOR));
 					String sCurrentLine;
-					while ((sCurrentLine = fr.readLine()) != null) {
-						String decrypted = Encryptor.decrypt(
-								Engine.getInstance().getConfig().getPropertyValue(Config.KEY),
-								Engine.getInstance().getConfig()
-										.getPropertyValue(Config.INIT_VECTOR),
-								sCurrentLine);
-						if (decrypted.contains(":")) {
-							accountInfo.put(decrypted.split(":")[0], decrypted.split(":")[1]);
+					while ((sCurrentLine = reader.readLine()) != null) {
+						if (sCurrentLine.contains(":")) {
+							accountInfo.put(sCurrentLine.split(":")[0], sCurrentLine.split(":")[1]);
 						}
 					}
 					if (accountInfo.size() >= 3) {
@@ -100,15 +104,15 @@ public class UserManager {
 			createUserDirectory(user);
 			userFile.createNewFile();
 		}
-		BufferedWriter fw = new BufferedWriter(new FileWriter(userFile));
+		final BufferedEncryptionWriter writer = new BufferedEncryptionWriter(
+				new FileWriter(userFile),
+				Engine.getInstance().getConfig().getPropertyValue(Config.KEY),
+				Engine.getInstance().getConfig().getPropertyValue(Config.INIT_VECTOR));
 		for (String[] data : user.getData()) {
-			fw.write(
-					Encryptor.encrypt(Engine.getInstance().getConfig().getPropertyValue(Config.KEY),
-							Engine.getInstance().getConfig().getPropertyValue(Config.INIT_VECTOR),
-							(data[0] + ":" + data[1])));
-			fw.newLine();
+			writer.write(data[0] + ":" + data[1]);
+			writer.newLine();
 		}
-		fw.close();
+		writer.close();
 	}
 
 	public ArrayList<User> getUsers() {

@@ -22,18 +22,17 @@ public class AccountManager {
 		this.user = user;
 		accounts = loadAccounts(user);
 	}
+	
+	public ArrayList<Account> getAccounts(){
+		return accounts;
+	}
 
 	private ArrayList<Account> loadAccounts(User user) {
 		final ArrayList<Account> list = new ArrayList<Account>();
 		final File userDirectory = new File(Cache.USERS_PATH + File.separator + "accounts");
 		if (userDirectory.exists()) {
 			for (File file : userDirectory.listFiles()) {
-				try {
-					final File f = Encryptor.decrypt(user.getEncryptionKey(), file);
-				} catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException
-						| NoSuchAlgorithmException | NoSuchPaddingException | IOException e) {
-					e.printStackTrace();
-				}
+				
 			}
 		}
 		return list;

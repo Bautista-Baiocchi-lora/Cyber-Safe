@@ -1,4 +1,4 @@
-package org.bautista.cybersafe.util.enctryption;
+package org.bautista.cybersafe.util.enctryption.util;
 
 import java.util.Random;
 

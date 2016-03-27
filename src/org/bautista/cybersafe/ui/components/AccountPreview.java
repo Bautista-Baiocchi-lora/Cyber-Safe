@@ -1,6 +1,7 @@
 package org.bautista.cybersafe.ui.components;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -32,10 +33,10 @@ public class AccountPreview extends JComponent implements MouseListener {
 	private final Border DESCRIPTION_BORDER = BorderFactory
 			.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Description");
 
-	public AccountPreview(Account account, String actionCommand) {
+	public AccountPreview(Account account) {
 		super();
 		this.account = account;
-		this.actionCommand = actionCommand;
+		this.actionCommand = account.getName();
 		constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.anchor = constraints.NORTHEAST;
@@ -77,15 +78,16 @@ public class AccountPreview extends JComponent implements MouseListener {
 		add(comp, constraints);
 	}
 
+	@Override
+	public Dimension getPreferredSize() {
+		return new Dimension(getParent().getWidth(), 50);
+	}
+
 	private void positionComponents() {
 		addComponent(0, 0, 0, 0, 1, title);
 		constraints.anchor = constraints.NORTHEAST;
 		addComponent(1, 0, 0, 0, 1, type);
 		addComponent(0, 1, 0, 0, 2, description);
-	}
-
-	public AccountPreview(Account account) {
-		this(account, account.getName());
 	}
 
 	public void mousePressed(MouseEvent e) {

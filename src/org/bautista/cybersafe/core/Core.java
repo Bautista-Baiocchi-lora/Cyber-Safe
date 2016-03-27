@@ -1,6 +1,6 @@
 package org.bautista.cybersafe.core;
 
-import org.bautista.cybersafe.util.enctryption.KeyGenerator;
+import org.bautista.cybersafe.util.enctryption.util.KeyGenerator;
 
 public class Core {
 

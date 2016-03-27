@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
-import org.bautista.cybersafe.util.enctryption.KeyGenerator;
+import org.bautista.cybersafe.util.enctryption.util.KeyGenerator;
 
 public class Config {
 

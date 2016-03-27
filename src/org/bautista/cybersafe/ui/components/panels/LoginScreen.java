@@ -24,7 +24,7 @@ public class LoginScreen extends JPanel implements ActionListener {
 	private final JOptionPane popUp;
 
 	public LoginScreen() {
-		setLayout(new GridLayout(4, 1));
+		setLayout(new GridLayout(4, 1,5,10));
 
 		username = new JTextField();
 		password = new JPasswordField();
@@ -61,7 +61,7 @@ public class LoginScreen extends JPanel implements ActionListener {
 			final User user = new User(username.getText(), String.valueOf(password.getPassword()),
 					String.valueOf(key.getPassword()));
 			if (loginAttempts < 5) {
-				if (!Engine.getInstance().getUserManager().login(user)) {
+				if (!Engine.getInstance().getUserManager().logIn(user)) {
 					loginAttempts++;
 					popUp.showMessageDialog(this,
 							"The username, password, or encryption key you have submitted are invalid. Please try again.\nYou have "

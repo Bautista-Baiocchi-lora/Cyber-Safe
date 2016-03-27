@@ -1,4 +1,4 @@
-package org.bautista.cybersafe.util.account;
+package org.bautista.cybersafe.util.account.util;
 
 public enum AccountType {
 
