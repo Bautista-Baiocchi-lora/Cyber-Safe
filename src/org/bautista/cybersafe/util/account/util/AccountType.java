@@ -1,9 +1,11 @@
 package org.bautista.cybersafe.util.account.util;
 
-public enum AccountType {
+import java.io.Serializable;
 
-	BANKING("Banking", 1), WEBSITE("Website", 2), GAME("Game", 3), OTHER("Other", 4), EMAIL("Email",
-			5);
+public enum AccountType implements Serializable {
+
+	BANKING("Banking", 1), WEBSITE("Website", 2), GAME("Game", 3), EMAIL("Email",
+			4), OTHER("Other", 5);
 
 	private String name;
 	private int id;
@@ -19,6 +21,15 @@ public enum AccountType {
 
 	public String getName() {
 		return name;
+	}
+
+	public static AccountType getTypeByName(String name) {
+		for (AccountType i : values()) {
+			if (i.getName().equalsIgnoreCase(name)) {
+				return i;
+			}
+		}
+		return null;
 	}
 
 }

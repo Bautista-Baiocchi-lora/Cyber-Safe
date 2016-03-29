@@ -23,6 +23,16 @@ public class BufferedEncryptionWriter extends BufferedWriter {
 		super.write(Encryptor.encrypt(key, vector, str));
 	}
 
+	public void write(String str, boolean newLine) throws IOException {
+		if (str == null) {
+			return;
+		}
+		super.write(Encryptor.encrypt(key, vector, str));
+		if (newLine) {
+			newLine();
+		}
+	}
+
 	public void newLine() throws IOException {
 		super.write(System.getProperty("line.separator"));
 	}

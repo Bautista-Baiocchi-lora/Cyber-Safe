@@ -1,11 +1,8 @@
 package org.bautista.cybersafe.ui.components.panels;
 
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.TrayIcon.MessageType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
@@ -17,7 +14,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.text.DefaultStyledDocument;
 
 import org.bautista.cybersafe.core.Engine;
 import org.bautista.cybersafe.util.enctryption.util.KeyGenerator;
@@ -38,8 +34,7 @@ public class CreateUser extends JPanel implements ActionListener {
 		constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.anchor = constraints.NORTHWEST;
-		constraints.weightx = 1;
-		constraints.weighty = 1;
+		constraints.insets = new Insets(10, 4, 4, 5);
 
 		popUp = new JOptionPane();
 		username = new JTextField();
@@ -61,37 +56,39 @@ public class CreateUser extends JPanel implements ActionListener {
 		back.addActionListener(this);
 
 		positionComponents();
-		setPreferredSize(new Dimension(300, 120));
 	}
 
-	private void addComponent(final int x, final int y, final int width,
+	private void addComponent(final int x, final int y, final int width, final double xweight,
+			final double yweight,
 			final JComponent comp) {
 		constraints.gridx = x;
 		constraints.gridy = y;
+		constraints.weightx = xweight;
+		constraints.weighty = yweight;
 		constraints.gridwidth = width;
 		add(comp, constraints);
 	}
 
 	private void positionComponents() {
-		addComponent(0, 0, 1, usernameLabel);
-		addComponent(1, 0, 3, username);
+		addComponent(0, 0, 1, .1, 1, usernameLabel);
+		addComponent(1, 0, 4, 1, 1, username);
 
-		addComponent(0, 1, 1, passwordLabel);
-		addComponent(1, 1, 3, password);
+		addComponent(0, 1, 1, .1, 1, passwordLabel);
+		addComponent(1, 1, 4, 1, 1, password);
 
-		addComponent(0, 2, 1, confirmPasswordLabel);
-		addComponent(1, 2, 3, confirmPassword);
+		addComponent(0, 2, 1, .1, 1, confirmPasswordLabel);
+		addComponent(1, 2, 4, 1, 1, confirmPassword);
 
-		addComponent(0, 3, 1, keyLabel);
-		addComponent(1, 3, 3, key);
+		addComponent(0, 3, 1, .1, 1, keyLabel);
+		addComponent(1, 3, 4, 1, 1, key);
 
-		addComponent(0, 4, 1, confirmKeyLabel);
-		addComponent(1, 4, 3, confirmKey);
+		addComponent(0, 4, 1, .1, 1, confirmKeyLabel);
+		addComponent(1, 4, 4, 1, 1, confirmKey);
 
-		addComponent(0, 5, 1, generateKey);
-		addComponent(1, 5, 2, create);
+		addComponent(0, 5, 1, 1, .7, generateKey);
+		addComponent(1, 5, 3, 1, .7, create);
 
-		addComponent(0, 6, 3, back);
+		addComponent(0, 6, 4, 1, .7, back);
 	}
 
 	private boolean keyIsValid() {

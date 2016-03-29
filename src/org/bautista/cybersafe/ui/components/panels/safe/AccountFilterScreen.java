@@ -8,9 +8,9 @@ import java.awt.event.ActionListener;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class AccountFilterScreen extends JPanel implements ActionListener{
-	
-	public AccountFilterScreen(){
+public class AccountFilterScreen extends JPanel implements ActionListener {
+
+	public AccountFilterScreen() {
 		setLayout(new BorderLayout());
 		add(new JLabel("filter screen"), BorderLayout.CENTER);
 		setPreferredSize(new Dimension(450, 350));
@@ -19,7 +19,7 @@ public class AccountFilterScreen extends JPanel implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

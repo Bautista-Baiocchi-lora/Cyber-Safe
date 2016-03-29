@@ -2,9 +2,9 @@ package org.bautista.cybersafe.util.user;
 
 public class User {
 
-	private String username;
-	private String password;
-	private String encryptionKey;
+	private final String username;
+	private final String password;
+	private final String encryptionKey;
 
 	public User(String username, String password, String encryptionKey) {
 		this.username = username;

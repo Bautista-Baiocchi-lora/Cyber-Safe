@@ -1,12 +1,14 @@
 package org.bautista.cybersafe.util.account;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.bautista.cybersafe.util.account.util.AccountField;
 import org.bautista.cybersafe.util.account.util.AccountType;
 
-public class Account {
+public class Account implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private final String name;
 	private final String description;
 	private final AccountType type;
@@ -18,10 +20,6 @@ public class Account {
 		this.description = description;
 		this.type = type;
 		this.fields = fields;
-	}
-
-	public Account(String name, String description, AccountType type) {
-		this(name, description, type, new ArrayList<AccountField>());
 	}
 
 	public ArrayList<AccountField> getFields() {

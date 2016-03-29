@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -22,21 +21,23 @@ import org.bautista.cybersafe.util.account.Account;
 
 public class AccountPreview extends JComponent implements MouseListener {
 	private final Account account;
-	private final JLabel title, type;
+	private final JLabel name, type;
 	private final JTextArea description;
 	private final GridBagConstraints constraints;
 	private final ArrayList<ActionListener> listeners;
 	private final String actionCommand;
-	private final Font TITLE_FONT = new Font("Dialog", Font.BOLD, 20);
-	private final Font TYPE_FONT = new Font("Dialog", Font.ITALIC, 14);
-	private final Font DESCRIPTION_FONT = new Font("Dialog", Font.PLAIN, 12);
+	private final Font TITLE_FONT = new Font("Dialog", Font.BOLD, 18);
+	private final Font TYPE_FONT = new Font("Dialog", Font.ITALIC, 13);
+	private final Font DESCRIPTION_FONT = new Font("Dialog", Font.PLAIN, 11);
 	private final Border DESCRIPTION_BORDER = BorderFactory
 			.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Description");
+	private final Border COMPONENT_BORDER = BorderFactory.createLineBorder(Color.BLACK);
 
 	public AccountPreview(Account account) {
 		super();
 		this.account = account;
 		this.actionCommand = account.getName();
+		setBorder(COMPONENT_BORDER);
 		constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.anchor = constraints.NORTHEAST;
@@ -44,8 +45,8 @@ public class AccountPreview extends JComponent implements MouseListener {
 		constraints.weighty = 1;
 		listeners = new ArrayList<ActionListener>();
 
-		title = new JLabel(account.getName());
-		title.setFont(TITLE_FONT);
+		name = new JLabel(account.getName());
+		name.setFont(TITLE_FONT);
 		type = new JLabel(account.getType().getName());
 		type.setFont(TYPE_FONT);
 		type.setHorizontalAlignment(JLabel.RIGHT);
@@ -57,8 +58,8 @@ public class AccountPreview extends JComponent implements MouseListener {
 		description.setFocusable(false);
 		description.setWrapStyleWord(true);
 		description.setBorder(DESCRIPTION_BORDER);
-		description.setText(
-				"This is a description.");
+		description.setText(account.getDescription());
+		description.setPreferredSize(new Dimension(250, 45));
 
 		setToolTipText(account.getName());
 		enableInputMethods(true);
@@ -80,11 +81,12 @@ public class AccountPreview extends JComponent implements MouseListener {
 
 	@Override
 	public Dimension getPreferredSize() {
-		return new Dimension(getParent().getWidth(), 50);
+		return new Dimension(getParent().getWidth(),
+				(name.getHeight() + type.getHeight() + description.getHeight()));
 	}
 
 	private void positionComponents() {
-		addComponent(0, 0, 0, 0, 1, title);
+		addComponent(0, 0, 0, 0, 1, name);
 		constraints.anchor = constraints.NORTHEAST;
 		addComponent(1, 0, 0, 0, 1, type);
 		addComponent(0, 1, 0, 0, 2, description);
@@ -95,6 +97,10 @@ public class AccountPreview extends JComponent implements MouseListener {
 	}
 
 	public void mouseReleased(MouseEvent e) {
+	}
+
+	public String getActionCommand() {
+		return actionCommand;
 	}
 
 	public void addActionListener(ActionListener listener) {

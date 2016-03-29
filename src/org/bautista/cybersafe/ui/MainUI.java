@@ -1,6 +1,7 @@
 package org.bautista.cybersafe.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Event;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,7 +13,6 @@ import java.util.ArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -25,7 +25,7 @@ import org.bautista.cybersafe.ui.components.panels.CreateUser;
 import org.bautista.cybersafe.ui.components.panels.LoginScreen;
 import org.bautista.cybersafe.ui.components.panels.safe.AccountFilterScreen;
 import org.bautista.cybersafe.ui.components.panels.safe.AccountScroller;
-import org.bautista.cybersafe.ui.components.panels.safe.CreateAccount;
+import org.bautista.cybersafe.ui.components.panels.safe.CreateAccountScreen;
 import org.bautista.cybersafe.ui.util.Scroller;
 
 public class MainUI extends JFrame implements WindowListener, ActionListener {
@@ -33,7 +33,7 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 	private LoginScreen loginScreen;
 	private AccountScroller accountScroller;
 	private CreateUser createUserScreen;
-	private CreateAccount createAccountScreen;
+	private CreateAccountScreen createAccountScreen;
 	private JMenuBar menu;
 	private JMenu account, file, user;
 	private JMenuItem info, logout, quit, createNewAccount;
@@ -99,8 +99,9 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 	public void confirmOnClose() {
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				int result = JOptionPane.showConfirmDialog(new JLabel("", JLabel.CENTER),
-						"Are you sure you want to close Cyber Safe?");
+				int result = JOptionPane.showConfirmDialog(null,
+						"Are you sure you want to close Cyber Safe?", "Warning!",
+						JOptionPane.YES_NO_OPTION);
 				if (result == JOptionPane.YES_OPTION) {
 					System.exit(0);
 				}
@@ -121,7 +122,7 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 		clearFrame();
 		enableUserMenu(true);
 		accountScroller = new AccountScroller();
-		final Scroller scroller = new Scroller(accountScroller);
+		final Scroller scroller = new Scroller(accountScroller, new Dimension(250, 100));
 		add(scroller, BorderLayout.LINE_END);
 		currentView.add(scroller);
 		filterScreen = new AccountFilterScreen();
@@ -141,8 +142,8 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 
 	public void showCreateAccount() {
 		clearFrame();
-		createAccountScreen = new CreateAccount();
-		final Scroller scroller = new Scroller(createAccountScreen);
+		createAccountScreen = new CreateAccountScreen();
+		final Scroller scroller = new Scroller(createAccountScreen, new Dimension(400, 500));
 		currentView.add(scroller);
 		add(scroller, BorderLayout.CENTER);
 		refresh();
@@ -157,7 +158,7 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 		}
 	}
 
-	private void refresh() {
+	public void refresh() {
 		revalidate();
 		pack();
 		repaint();
@@ -211,7 +212,12 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 		JOptionPane pane = new JOptionPane();
 		switch (command) {
 			case "quit":
-				System.exit(0);
+				int result = JOptionPane.showConfirmDialog(null,
+						"Are you sure you want to close Cyber Safe?", "Warning!",
+						JOptionPane.YES_NO_OPTION);
+				if (result == JOptionPane.YES_OPTION) {
+					System.exit(0);
+				}
 				break;
 			case "new account":
 				Engine.getInstance().openCreateAccountScreen();

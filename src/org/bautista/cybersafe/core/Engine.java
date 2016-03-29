@@ -55,7 +55,9 @@ public class Engine {
 	}
 
 	public void openSafeScreen() {
-		accountManager = new AccountManager(Variables.getCurrentUser());
+		if (accountManager == null) {
+			accountManager = new AccountManager(Variables.getCurrentUser());
+		}
 		ui.showSafe();
 	}
 
@@ -69,6 +71,10 @@ public class Engine {
 
 	public void openCreateAccountScreen() {
 		ui.showCreateAccount();
+	}
+
+	public void refreshUI() {
+		ui.refresh();
 	}
 
 	public void logOut() {

@@ -1,11 +1,14 @@
 package org.bautista.cybersafe.ui.components.panels;
 
 import java.awt.Dimension;
-import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -22,9 +25,16 @@ public class LoginScreen extends JPanel implements ActionListener {
 	private final JLabel usernameLabel, passwordLabel, keyLabel;
 	private int loginAttempts = 0;
 	private final JOptionPane popUp;
+	private final GridBagConstraints constraints;
 
 	public LoginScreen() {
-		setLayout(new GridLayout(4, 1,5,10));
+		setLayout(new GridBagLayout());
+		constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.anchor = constraints.NORTHWEST;
+		constraints.weightx = 1;
+		constraints.weighty = 1;
+		constraints.insets = new Insets(10, 5, 5, 3);
 
 		username = new JTextField();
 		password = new JPasswordField();
@@ -34,24 +44,35 @@ public class LoginScreen extends JPanel implements ActionListener {
 		passwordLabel = new JLabel("Password: ", JLabel.TRAILING);
 		login = new JButton("Login");
 		login.addActionListener(this);
-		createAccount = new JButton("Create Account");
+		createAccount = new JButton("Create New Account");
 		createAccount.addActionListener(this);
 
 		popUp = new JOptionPane();
 
-		setPreferredSize(new Dimension(300, 120));
 		positionComponents();
+		setPreferredSize(new Dimension(300, 175));
+	}
+
+	private void addComponent(final int x, final int y, final int width, final double xweight,
+			final double yweight,
+			final JComponent comp) {
+		constraints.gridx = x;
+		constraints.gridy = y;
+		constraints.weightx = xweight;
+		constraints.weighty = yweight;
+		constraints.gridwidth = width;
+		add(comp, constraints);
 	}
 
 	private void positionComponents() {
-		add(usernameLabel);
-		add(username);
-		add(passwordLabel);
-		add(password);
-		add(keyLabel);
-		add(key);
-		add(createAccount);
-		add(login);
+		addComponent(0, 0, 1, .1, 1, usernameLabel);
+		addComponent(1, 0, 3, 1, 1, username);
+		addComponent(0, 1, 1, .1, 1, passwordLabel);
+		addComponent(1, 1, 3, 1, 1, password);
+		addComponent(0, 2, 1, .1, 1, keyLabel);
+		addComponent(1, 2, 3, 1, 1, key);
+		addComponent(0, 3, 4, 1, .7, login);
+		addComponent(0, 4, 4, 1, .7, createAccount);
 	}
 
 	@Override
