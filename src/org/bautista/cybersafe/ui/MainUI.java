@@ -26,7 +26,9 @@ import org.bautista.cybersafe.ui.components.panels.LoginScreen;
 import org.bautista.cybersafe.ui.components.panels.safe.AccountFilterScreen;
 import org.bautista.cybersafe.ui.components.panels.safe.AccountScroller;
 import org.bautista.cybersafe.ui.components.panels.safe.CreateAccountScreen;
+import org.bautista.cybersafe.ui.components.panels.safe.AccountViewerScreen;
 import org.bautista.cybersafe.ui.util.Scroller;
+import org.bautista.cybersafe.util.account.Account;
 
 public class MainUI extends JFrame implements WindowListener, ActionListener {
 
@@ -36,8 +38,9 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 	private CreateAccountScreen createAccountScreen;
 	private JMenuBar menu;
 	private JMenu account, file, user;
-	private JMenuItem info, logout, quit, createNewAccount;
+	private JMenuItem info, logout, quit, createNewAccount, recoverPassword;
 	private AccountFilterScreen filterScreen;
+	private AccountViewerScreen viewAccountScreen;
 	private final ArrayList<JComponent> currentView;
 
 	public MainUI() {
@@ -62,6 +65,11 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 		file.add(account);
 		file.add(user);
 
+		recoverPassword = new JMenuItem("Recover Password", 'r');
+		recoverPassword.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK));
+		recoverPassword.setActionCommand("recover password");
+		recoverPassword.addActionListener(this);
+		user.add(recoverPassword);
 		info = new JMenuItem("Information", 'i');
 		info.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, Event.CTRL_MASK));
 		info.setActionCommand("user info");
@@ -94,6 +102,7 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 		info.setEnabled(i);
 		logout.setEnabled(i);
 		createNewAccount.setEnabled(i);
+		recoverPassword.setEnabled(i == true ? false : true);
 	}
 
 	public void confirmOnClose() {
@@ -107,6 +116,10 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 				}
 			}
 		});
+	}
+
+	public void setFrameTitle(String title) {
+		this.setTitle(title);
 	}
 
 	public void showLogin() {
@@ -137,6 +150,15 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 		createUserScreen = new CreateUser();
 		currentView.add(createUserScreen);
 		add(createUserScreen);
+		refresh();
+	}
+
+	public void showAccount(Account account) {
+		clearFrame();
+		viewAccountScreen = new AccountViewerScreen(account);
+		final Scroller scroller = new Scroller(viewAccountScreen, new Dimension(400, 300));
+		currentView.add(scroller);
+		add(scroller, BorderLayout.CENTER);
 		refresh();
 	}
 
@@ -241,6 +263,9 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 						Engine.getInstance().logOut();
 					}
 				}
+				break;
+			case "recover password":
+				System.out.println("Recover password");
 				break;
 		}
 

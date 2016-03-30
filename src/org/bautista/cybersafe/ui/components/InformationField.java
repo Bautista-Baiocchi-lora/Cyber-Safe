@@ -15,6 +15,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
+import org.bautista.cybersafe.core.Engine;
 import org.bautista.cybersafe.ui.components.panels.safe.CreateAccountScreen;
 import org.bautista.cybersafe.ui.util.Scroller;
 import org.bautista.cybersafe.util.account.util.FieldType;
@@ -33,7 +34,7 @@ public class InformationField extends JComponent implements ActionListener {
 
 		titleLabel = new JLabel("Field Title", JLabel.LEADING);
 		title = new JTextField();
-		title.setPreferredSize(new Dimension(367, 25));
+		title.setPreferredSize(new Dimension(367, 20));
 		fieldLabel = new JLabel("Field", JLabel.LEADING);
 		this.field = field;
 		delete = new JButton("Delete");

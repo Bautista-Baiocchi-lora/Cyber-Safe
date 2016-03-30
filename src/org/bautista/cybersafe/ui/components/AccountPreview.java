@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -43,6 +44,8 @@ public class AccountPreview extends JComponent implements MouseListener {
 		constraints.anchor = constraints.NORTHEAST;
 		constraints.weightx = 1;
 		constraints.weighty = 1;
+		constraints.insets = new Insets(0, 5, 7, 5);
+
 		listeners = new ArrayList<ActionListener>();
 
 		name = new JLabel(account.getName());
@@ -58,7 +61,8 @@ public class AccountPreview extends JComponent implements MouseListener {
 		description.setFocusable(false);
 		description.setWrapStyleWord(true);
 		description.setBorder(DESCRIPTION_BORDER);
-		description.setText(account.getDescription());
+		description.setText(account.getDescription().length() > 0 ? account.getDescription()
+				: "No description avaliable.");
 		description.setPreferredSize(new Dimension(250, 45));
 
 		setToolTipText(account.getName());
@@ -101,6 +105,10 @@ public class AccountPreview extends JComponent implements MouseListener {
 
 	public String getActionCommand() {
 		return actionCommand;
+	}
+
+	public Account getAccount() {
+		return account;
 	}
 
 	public void addActionListener(ActionListener listener) {

@@ -29,7 +29,7 @@ public class CreateAccountScreen extends JPanel implements ActionListener {
 	private final JTextField titleTextField;
 	private final JTextArea descriptionTextArea;
 	private final InformationField title, type, description;
-	private final JButton createAccount;
+	private final JButton createAccount, back;
 	private final InformationFieldCreator infoFieldCreator;
 	private final ArrayList<InformationField> fields;
 	private final JOptionPane popUp;
@@ -61,6 +61,7 @@ public class CreateAccountScreen extends JPanel implements ActionListener {
 
 		infoFieldCreator = new InformationFieldCreator();
 		createAccount = new JButton("Create Account");
+		back = new JButton("Back");
 
 		positionComponents();
 		setListeners();
@@ -99,9 +100,11 @@ public class CreateAccountScreen extends JPanel implements ActionListener {
 
 	private void setListeners() {
 		createAccount.addActionListener(this);
+		back.addActionListener(this);
 	}
 
 	private void positionComponents() {
+		addComponent(0, nextRow, 1, 1, 1, back);
 		addComponent(0, nextRow, 1, 1, 1, createAccount);
 		addComponent(0, nextRow, 1, 1, 1, title);
 		addComponent(0, nextRow, 1, 1, 1, type);
@@ -111,13 +114,26 @@ public class CreateAccountScreen extends JPanel implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		String command = e.getActionCommand();
+		if (command.equalsIgnoreCase("back")) {
+			int reply = JOptionPane.showConfirmDialog(this,
+					"Do you want to save this account before exiting the account creation screen? All data will be lost otherwise.",
+					"Warning!",
+					JOptionPane.YES_NO_OPTION);
+			if (reply == JOptionPane.NO_OPTION) {
+				Engine.getInstance().openSafeScreen();
+				return;
+			}
+		}
 		final ArrayList<AccountField> fields = new ArrayList<AccountField>();
 		for (InformationField field : this.fields) {
 			fields.add(
-					new AccountField(field.getName(), field.getFieldData(), field.getFieldType()));
+					new AccountField(field.getFieldTitle(), field.getFieldData(),
+							field.getFieldType()));
 		}
 		if (!title.getFieldData().isEmpty()) {
-			if (Engine.getInstance().getAccountManager().isNameAvaliable(title.getFieldData())) {
+			if (Engine.getInstance().getAccountManager()
+					.isNameAvaliable(title.getFieldData())) {
 				final Account account = new Account(title.getFieldData(),
 						description.getFieldData(),
 						AccountType.getTypeByName(type.getFieldData()), fields);

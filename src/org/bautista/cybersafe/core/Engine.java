@@ -6,6 +6,7 @@ import org.bautista.cybersafe.data.Variables;
 import org.bautista.cybersafe.ui.MainUI;
 import org.bautista.cybersafe.util.Cache;
 import org.bautista.cybersafe.util.Config;
+import org.bautista.cybersafe.util.account.Account;
 import org.bautista.cybersafe.util.account.AccountManager;
 import org.bautista.cybersafe.util.user.UserManager;
 
@@ -17,7 +18,7 @@ public class Engine {
 	private final UserManager userManager;
 	private final Config config;
 
-	public Engine() {
+	private Engine() {
 		instance = this;
 		if (!Cache.cacheExists()) {
 			if (!Cache.createCache()) {
@@ -59,10 +60,18 @@ public class Engine {
 			accountManager = new AccountManager(Variables.getCurrentUser());
 		}
 		ui.showSafe();
+		ui.setTitle("Cyber Safe - [" + Variables.getCurrentUser().getUsername() + "]");
+	}
+
+	public void openAccountViewer(Account account) {
+		ui.showAccount(account);
+		ui.setTitle("Cyber Safe - [" + Variables.getCurrentUser().getUsername() + "] -"
+				+ account.getName());
 	}
 
 	public void openLoginScreen() {
 		ui.showLogin();
+		ui.setTitle("Cyber Safe");
 	}
 
 	public void openCreateUserScreen() {

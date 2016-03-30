@@ -52,8 +52,12 @@ public class AccountScroller extends JPanel implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getModifiers() == InputEvent.BUTTON1_MASK) {
-			System.out.println("fire preview");
+		String command = e.getActionCommand();
+		for (AccountPreview preview : accountPreviews) {
+			if (command.equalsIgnoreCase(preview.getActionCommand())) {
+				Engine.getInstance().openAccountViewer(preview.getAccount());
+				break;
+			}
 		}
 	}
 

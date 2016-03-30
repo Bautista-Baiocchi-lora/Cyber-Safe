@@ -38,7 +38,7 @@ public class InformationFieldCreator extends JPanel implements ActionListener {
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
 		this.textField = new JTextField();
-		textField.setPreferredSize(new Dimension(367, 25));
+		textField.setPreferredSize(new Dimension(367, 20));
 		fieldTypeLabel = new JLabel("Field Type", JLabel.LEADING);
 		fieldType = new JComboBox(FIELD_TYPES);
 		add = new JButton("Add Blank Field");
@@ -66,7 +66,7 @@ public class InformationFieldCreator extends JPanel implements ActionListener {
 			case "large text field":
 				CreateAccountScreen.getInstance()
 						.addComponent(new InformationField(
-								new Scroller(textArea, new Dimension(367, 25))));
+								new Scroller(textArea, new Dimension(367, 20))));
 				break;
 		}
 		revalidate();
