@@ -8,8 +8,15 @@ public class User {
 	private String recoveryQuestion;
 	private String recoveryAnswer;
 
-	public User(String username, String password, String recoveryQuestion, String recoveryAnswer,
-			String encryptionKey) {
+	public User(final String username, final String password, final String encryptionKey) {
+		this.username = username;
+		this.password = password;
+		this.encryptionKey = encryptionKey;
+	}
+
+	public User(final String username, final String password, final String recoveryQuestion,
+			final String recoveryAnswer,
+			final String encryptionKey) {
 		this.username = username;
 		this.password = password;
 		this.encryptionKey = encryptionKey;
@@ -17,43 +24,37 @@ public class User {
 		this.recoveryQuestion = recoveryQuestion;
 	}
 
-	public User(String username, String password, String encryptionKey) {
-		this.username = username;
-		this.password = password;
-		this.encryptionKey = encryptionKey;
+	public boolean equals(final User user) {
+		return user.getUsername().equalsIgnoreCase(username)
+				&& user.getEncryptionKey().equalsIgnoreCase(encryptionKey)
+				&& user.getPassword().equalsIgnoreCase(password);
 	}
 
-	public String getUsername() {
-		return username;
-	}
-
-	public String getPassword() {
-		return password;
+	public String[][] getData() {
+		final String[][] data = { { "name", username }, { "password", password },
+				{ "key", encryptionKey }, { "recovery question", recoveryQuestion },
+				{ "recovery answer", recoveryAnswer } };
+		return data;
 	}
 
 	public String getEncryptionKey() {
 		return encryptionKey;
 	}
 
-	public String[][] getData() {
-		String[][] data = { { "name", username }, { "password", password },
-				{ "key", encryptionKey }, { "recovery question", recoveryQuestion },
-				{ "recovery answer", recoveryAnswer } };
-		return data;
-	}
-
-	public String getRecoveryQuestion() {
-		return recoveryQuestion;
+	public String getPassword() {
+		return password;
 	}
 
 	public String getRecoveryAnswer() {
 		return recoveryAnswer;
 	}
 
-	public boolean equals(User user) {
-		return user.getUsername().equalsIgnoreCase(username)
-				&& user.getEncryptionKey().equalsIgnoreCase(encryptionKey)
-				&& user.getPassword().equalsIgnoreCase(password);
+	public String getRecoveryQuestion() {
+		return recoveryQuestion;
+	}
+
+	public String getUsername() {
+		return username;
 	}
 
 }

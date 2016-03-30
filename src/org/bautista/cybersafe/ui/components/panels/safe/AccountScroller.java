@@ -3,7 +3,6 @@ package org.bautista.cybersafe.ui.components.panels.safe;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -23,41 +22,41 @@ public class AccountScroller extends JPanel implements ActionListener {
 		setListeners();
 	}
 
-	public void refresh() {
-		accountPreviews = getAccountPreviews();
-		positionComponents();
-		setListeners();
+	@Override
+	public void actionPerformed(final ActionEvent e) {
+		final String command = e.getActionCommand();
+		for (final AccountPreview preview : accountPreviews) {
+			if (command.equalsIgnoreCase(preview.getActionCommand())) {
+				Engine.getInstance().openAccountViewer(preview.getAccount());
+				break;
+			}
+		}
 	}
 
 	private ArrayList<AccountPreview> getAccountPreviews() {
 		final ArrayList<AccountPreview> list = new ArrayList<AccountPreview>();
-		for (Account account : Engine.getInstance().getAccountManager().getAccounts()) {
+		for (final Account account : Engine.getInstance().getAccountManager().getAccounts()) {
 			list.add(new AccountPreview(account));
 		}
 		return list;
 	}
 
 	private void positionComponents() {
-		for (AccountPreview ap : accountPreviews) {
+		for (final AccountPreview ap : accountPreviews) {
 			add(ap, new GridLayout(nextRow, 1));
 			nextRow++;
 		}
 	}
 
-	private void setListeners() {
-		for (AccountPreview ap : accountPreviews) {
-			ap.addActionListener(this);
-		}
+	public void refresh() {
+		accountPreviews = getAccountPreviews();
+		positionComponents();
+		setListeners();
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		String command = e.getActionCommand();
-		for (AccountPreview preview : accountPreviews) {
-			if (command.equalsIgnoreCase(preview.getActionCommand())) {
-				Engine.getInstance().openAccountViewer(preview.getAccount());
-				break;
-			}
+	private void setListeners() {
+		for (final AccountPreview ap : accountPreviews) {
+			ap.addActionListener(this);
 		}
 	}
 

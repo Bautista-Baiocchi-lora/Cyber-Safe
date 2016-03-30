@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 import org.bautista.cybersafe.core.Engine;
@@ -34,12 +35,12 @@ public class InformationFieldCreator extends JPanel implements ActionListener {
 		super();
 		setLayout(new GridLayout(3, 1, 10, 5));
 
-		this.textArea = new JTextArea();
+		textArea = new JTextArea();
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
-		this.textField = new JTextField();
+		textField = new JTextField();
 		textField.setPreferredSize(new Dimension(367, 20));
-		fieldTypeLabel = new JLabel("Field Type", JLabel.LEADING);
+		fieldTypeLabel = new JLabel("Field Type", SwingConstants.LEADING);
 		fieldType = new JComboBox(FIELD_TYPES);
 		add = new JButton("Add Blank Field");
 		add.setActionCommand("add");
@@ -49,15 +50,9 @@ public class InformationFieldCreator extends JPanel implements ActionListener {
 		positionComponents();
 	}
 
-	private void positionComponents() {
-		add(fieldTypeLabel, new GridLayout(1, 1));
-		add(fieldType, new GridLayout(2, 1));
-		add(add, new GridLayout(3, 1));
-	}
-
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		String command = e.getActionCommand().toLowerCase();
+	public void actionPerformed(final ActionEvent e) {
+		e.getActionCommand().toLowerCase();
 		switch (fieldType.getSelectedItem().toString().toLowerCase()) {
 			case "normal text field":
 				CreateAccountScreen.getInstance().addComponent(
@@ -73,6 +68,12 @@ public class InformationFieldCreator extends JPanel implements ActionListener {
 		repaint();
 		updateUI();
 		Engine.getInstance().refreshUI();
+	}
+
+	private void positionComponents() {
+		add(fieldTypeLabel, new GridLayout(1, 1));
+		add(fieldType, new GridLayout(2, 1));
+		add(add, new GridLayout(3, 1));
 	}
 
 }

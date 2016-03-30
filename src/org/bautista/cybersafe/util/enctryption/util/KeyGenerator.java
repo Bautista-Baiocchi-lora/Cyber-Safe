@@ -12,7 +12,7 @@ public class KeyGenerator {
 
 	public static String getNewKey() {
 		String key = "";
-		Random random = new Random();
+		final Random random = new Random();
 		for (int i = 0; i < 16; i++) {
 			key += String.valueOf(charOptions[random.nextInt((charOptions.length - 1))]);
 		}

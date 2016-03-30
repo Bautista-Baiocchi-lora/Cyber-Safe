@@ -15,7 +15,8 @@ public class EncryptedObjectInputStream extends BufferedInputStream {
 	private final String key;
 	private final String vector;
 
-	public EncryptedObjectInputStream(FileInputStream stream, String key, String vector)
+	public EncryptedObjectInputStream(final FileInputStream stream, final String key,
+			final String vector)
 			throws IOException {
 		super(stream);
 		this.key = key;

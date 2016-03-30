@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.bautista.cybersafe.core.Engine;
 import org.bautista.cybersafe.util.user.User;
@@ -21,7 +22,7 @@ import org.bautista.cybersafe.util.user.User;
 public class LoginScreen extends JPanel implements ActionListener {
 	private final JTextField username;
 	private final JPasswordField password, key;
-	private final JButton login, createAccount, recoverPassword;
+	private final JButton login, createAccount, recoverAccount;
 	private final JLabel usernameLabel, passwordLabel, keyLabel;
 	private int loginAttempts = 0;
 	private final JOptionPane popUp;
@@ -31,7 +32,7 @@ public class LoginScreen extends JPanel implements ActionListener {
 		setLayout(new GridBagLayout());
 		constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.anchor = constraints.NORTHWEST;
+		constraints.anchor = GridBagConstraints.NORTHWEST;
 		constraints.weightx = 1;
 		constraints.weighty = 1;
 		constraints.insets = new Insets(8, 5, 3, 3);
@@ -39,18 +40,72 @@ public class LoginScreen extends JPanel implements ActionListener {
 		username = new JTextField();
 		password = new JPasswordField();
 		key = new JPasswordField();
-		usernameLabel = new JLabel("Username: ", JLabel.TRAILING);
-		keyLabel = new JLabel("Encryption Key: ", JLabel.TRAILING);
-		passwordLabel = new JLabel("Password: ", JLabel.TRAILING);
+		usernameLabel = new JLabel("Username: ", SwingConstants.TRAILING);
+		keyLabel = new JLabel("Encryption Key: ", SwingConstants.TRAILING);
+		passwordLabel = new JLabel("Password: ", SwingConstants.TRAILING);
 		login = new JButton("Login");
 		createAccount = new JButton("Create New Account");
-		recoverPassword = new JButton("Recover Password");
+		recoverAccount = new JButton("Recover Account");
 
 		popUp = new JOptionPane();
 
 		positionComponents();
 		setListeners();
 		setPreferredSize(new Dimension(300, 220));
+	}
+
+	@Override
+	public void actionPerformed(final ActionEvent e) {
+		final String command = e.getActionCommand();
+		if (command.equalsIgnoreCase("login")) {
+			final User user = new User(username.getText(), String.valueOf(password.getPassword()),
+					String.valueOf(key.getPassword()));
+			if (loginAttempts < 5) {
+				if (!Engine.getInstance().getUserManager().logIn(user)) {
+					loginAttempts++;
+					JOptionPane.showMessageDialog(this,
+							"The username, password, or encryption key you have submitted are invalid. Please try again.\nYou have "
+									+ (5 - loginAttempts) + " login attempts left.");
+				}
+			} else {
+				loginAttempts = 3;
+				JOptionPane.showMessageDialog(this,
+						"You have exceded the amount of login attempts. Please wait 30 seconds before trying again.");
+			}
+		} else if (command.equalsIgnoreCase("Create New Account")) {
+			Engine.getInstance().openCreateUserScreen();
+		} else {
+			if (username.getText().length() > 0) {
+				final User user = Engine.getInstance().getUserManager()
+						.getUserByName(username.getText());
+				if (user != null) {
+					final String answer = JOptionPane.showInputDialog(this,
+							user.getRecoveryQuestion());
+					if ((answer != null) && answer.equalsIgnoreCase(user.getRecoveryAnswer())) {
+						JOptionPane.showMessageDialog(null,
+								"Username: " + user.getUsername()
+										+ "\nPassword: "
+										+ user.getPassword()
+										+ "\nRecovery Question: "
+										+ user.getRecoveryQuestion()
+										+ "\nRecovery Question Answer: "
+										+ user.getRecoveryAnswer()
+										+ "\nEncryption Key: "
+										+ user.getEncryptionKey(),
+								"Information", JOptionPane.OK_OPTION);
+					} else {
+						JOptionPane.showMessageDialog(this,
+								"Incorrect answer.");
+					}
+				} else {
+					JOptionPane.showMessageDialog(this,
+							"Account doesn't exist.");
+				}
+			} else {
+				JOptionPane.showMessageDialog(this,
+						"Please enter a username before attempting to recover an account.");
+			}
+		}
 	}
 
 	private void addComponent(final int x, final int y, final int width, final double xweight,
@@ -64,12 +119,6 @@ public class LoginScreen extends JPanel implements ActionListener {
 		add(comp, constraints);
 	}
 
-	private void setListeners() {
-		recoverPassword.addActionListener(this);
-		createAccount.addActionListener(this);
-		login.addActionListener(this);
-	}
-
 	private void positionComponents() {
 		addComponent(0, 0, 1, .1, 1, usernameLabel);
 		addComponent(1, 0, 3, 1, 1, username);
@@ -78,33 +127,14 @@ public class LoginScreen extends JPanel implements ActionListener {
 		addComponent(0, 2, 1, .1, 1, keyLabel);
 		addComponent(1, 2, 3, 1, 1, key);
 		addComponent(0, 3, 4, 1, .5, login);
-		addComponent(0, 4, 4, 1, .5, recoverPassword);
+		addComponent(0, 4, 4, 1, .5, recoverAccount);
 		addComponent(0, 5, 4, 1, .5, createAccount);
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		String command = e.getActionCommand();
-		if (command.equalsIgnoreCase("login")) {
-			final User user = new User(username.getText(), String.valueOf(password.getPassword()),
-					String.valueOf(key.getPassword()));
-			if (loginAttempts < 5) {
-				if (!Engine.getInstance().getUserManager().logIn(user)) {
-					loginAttempts++;
-					popUp.showMessageDialog(this,
-							"The username, password, or encryption key you have submitted are invalid. Please try again.\nYou have "
-									+ (5 - loginAttempts) + " login attempts left.");
-				}
-			} else {
-				loginAttempts = 3;
-				popUp.showMessageDialog(this,
-						"You have exceded the amount of login attempts. Please wait 30 seconds before trying again.");
-			}
-		} else if (command.equalsIgnoreCase("Create New Account")) {
-			Engine.getInstance().openCreateUserScreen();
-		} else {
-			System.out.println("Recover password prompt");
-		}
+	private void setListeners() {
+		recoverAccount.addActionListener(this);
+		createAccount.addActionListener(this);
+		login.addActionListener(this);
 	}
 
 }

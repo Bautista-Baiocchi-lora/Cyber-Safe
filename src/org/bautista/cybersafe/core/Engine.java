@@ -13,9 +13,15 @@ import org.bautista.cybersafe.util.user.UserManager;
 public class Engine {
 
 	private static Engine instance;
+
+	public static Engine getInstance() {
+		return instance == null ? instance = new Engine() : instance;
+	}
+
 	private AccountManager accountManager;
 	private final MainUI ui;
 	private final UserManager userManager;
+
 	private final Config config;
 
 	private Engine() {
@@ -30,17 +36,8 @@ public class Engine {
 		ui = new MainUI();
 	}
 
-	public void run() {
-		try {
-			SwingUtilities.invokeAndWait(new Runnable() {
-				@Override
-				public void run() {
-					ui.setVisible(true);
-				}
-			});
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
+	public AccountManager getAccountManager() {
+		return accountManager;
 	}
 
 	public Config getConfig() {
@@ -51,8 +48,29 @@ public class Engine {
 		return userManager;
 	}
 
-	public AccountManager getAccountManager() {
-		return accountManager;
+	public void logOut() {
+		userManager.logOut(Variables.getCurrentUser());
+		accountManager = null;
+		ui.showLogin();
+	}
+
+	public void openAccountViewer(final Account account) {
+		ui.showAccount(account);
+		ui.setTitle("Cyber Safe - [" + Variables.getCurrentUser().getUsername() + "] -"
+				+ account.getName());
+	}
+
+	public void openCreateAccountScreen() {
+		ui.showCreateAccount();
+	}
+
+	public void openCreateUserScreen() {
+		ui.showCreateUser();
+	}
+
+	public void openLoginScreen() {
+		ui.showLogin();
+		ui.setTitle("Cyber Safe");
 	}
 
 	public void openSafeScreen() {
@@ -63,37 +81,16 @@ public class Engine {
 		ui.setTitle("Cyber Safe - [" + Variables.getCurrentUser().getUsername() + "]");
 	}
 
-	public void openAccountViewer(Account account) {
-		ui.showAccount(account);
-		ui.setTitle("Cyber Safe - [" + Variables.getCurrentUser().getUsername() + "] -"
-				+ account.getName());
-	}
-
-	public void openLoginScreen() {
-		ui.showLogin();
-		ui.setTitle("Cyber Safe");
-	}
-
-	public void openCreateUserScreen() {
-		ui.showCreateUser();
-	}
-
-	public void openCreateAccountScreen() {
-		ui.showCreateAccount();
-	}
-
 	public void refreshUI() {
 		ui.refresh();
 	}
 
-	public void logOut() {
-		userManager.logOut(Variables.getCurrentUser());
-		accountManager = null;
-		ui.showLogin();
-	}
-
-	public static Engine getInstance() {
-		return instance == null ? instance = new Engine() : instance;
+	public void run() {
+		try {
+			SwingUtilities.invokeAndWait(() -> ui.setVisible(true));
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

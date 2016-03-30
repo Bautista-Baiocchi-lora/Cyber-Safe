@@ -7,7 +7,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
 public class Scroller extends JScrollPane {
-	private JComponent component;
+	private final JComponent component;
 
 	public Scroller(final JComponent component) {
 		super(component, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
@@ -16,7 +16,7 @@ public class Scroller extends JScrollPane {
 		setAutoscrolls(true);
 	}
 
-	public Scroller(final JComponent component, Dimension size) {
+	public Scroller(final JComponent component, final Dimension size) {
 		super(component, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		this.component = component;

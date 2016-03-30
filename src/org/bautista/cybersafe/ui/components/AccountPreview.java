@@ -16,6 +16,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 import org.bautista.cybersafe.util.account.Account;
@@ -34,14 +35,14 @@ public class AccountPreview extends JComponent implements MouseListener {
 			.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Description");
 	private final Border COMPONENT_BORDER = BorderFactory.createLineBorder(Color.BLACK);
 
-	public AccountPreview(Account account) {
+	public AccountPreview(final Account account) {
 		super();
 		this.account = account;
-		this.actionCommand = account.getName();
+		actionCommand = account.getName();
 		setBorder(COMPONENT_BORDER);
 		constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.anchor = constraints.NORTHEAST;
+		constraints.anchor = GridBagConstraints.NORTHEAST;
 		constraints.weightx = 1;
 		constraints.weighty = 1;
 		constraints.insets = new Insets(0, 5, 7, 5);
@@ -52,7 +53,7 @@ public class AccountPreview extends JComponent implements MouseListener {
 		name.setFont(TITLE_FONT);
 		type = new JLabel(account.getType().getName());
 		type.setFont(TYPE_FONT);
-		type.setHorizontalAlignment(JLabel.RIGHT);
+		type.setHorizontalAlignment(SwingConstants.RIGHT);
 		description = new JTextArea();
 		description.setFont(DESCRIPTION_FONT);
 		description.setLineWrap(true);
@@ -72,6 +73,10 @@ public class AccountPreview extends JComponent implements MouseListener {
 		positionComponents();
 	}
 
+	public void addActionListener(final ActionListener listener) {
+		listeners.add(listener);
+	}
+
 	private void addComponent(final int x, final int y, final int yPad,
 			final int xPad, final int width,
 			final JComponent comp) {
@@ -83,65 +88,63 @@ public class AccountPreview extends JComponent implements MouseListener {
 		add(comp, constraints);
 	}
 
-	@Override
-	public Dimension getPreferredSize() {
-		return new Dimension(getParent().getWidth(),
-				(name.getHeight() + type.getHeight() + description.getHeight()));
-	}
-
-	private void positionComponents() {
-		addComponent(0, 0, 0, 0, 1, name);
-		constraints.anchor = constraints.NORTHEAST;
-		addComponent(1, 0, 0, 0, 1, type);
-		addComponent(0, 1, 0, 0, 2, description);
-	}
-
-	public void mousePressed(MouseEvent e) {
-		notifyListeners(e);
-	}
-
-	public void mouseReleased(MouseEvent e) {
+	public Account getAccount() {
+		return account;
 	}
 
 	public String getActionCommand() {
 		return actionCommand;
 	}
 
-	public Account getAccount() {
-		return account;
+	@Override
+	public Dimension getPreferredSize() {
+		return new Dimension(getParent().getWidth(),
+				(name.getHeight() + type.getHeight() + description.getHeight()));
 	}
 
-	public void addActionListener(ActionListener listener) {
-		listeners.add(listener);
+	@Override
+	public void mouseClicked(final MouseEvent e) {
+		// TODO Auto-generated method stub
+
 	}
 
-	private void notifyListeners(MouseEvent e) {
-		ActionEvent evt = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, actionCommand,
+	@Override
+	public void mouseEntered(final MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseExited(final MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mousePressed(final MouseEvent e) {
+		notifyListeners(e);
+	}
+
+	@Override
+	public void mouseReleased(final MouseEvent e) {
+	}
+
+	private void notifyListeners(final MouseEvent e) {
+		final ActionEvent evt = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, actionCommand,
 				e.getWhen(), e.getModifiers());
 		synchronized (listeners) {
 			for (int i = 0; i < listeners.size(); i++) {
-				ActionListener tmp = listeners.get(i);
+				final ActionListener tmp = listeners.get(i);
 				tmp.actionPerformed(evt);
 			}
 		}
 	}
 
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-
+	private void positionComponents() {
+		addComponent(0, 0, 0, 0, 1, name);
+		constraints.anchor = GridBagConstraints.NORTHEAST;
+		addComponent(1, 0, 0, 0, 1, type);
+		addComponent(0, 1, 0, 0, 2, description);
 	}
 
 }

@@ -15,30 +15,45 @@ import org.bautista.cybersafe.util.enctryption.util.BufferedEncryptionReader;
 import org.bautista.cybersafe.util.enctryption.util.BufferedEncryptionWriter;
 
 public class UserManager {
-	private ArrayList<User> users;
+	private final ArrayList<User> users;
 
 	public UserManager() {
 		users = loadUsers();
 	}
 
-	public boolean logIn(User user) {
-		for (User u : users) {
-			if (u.equals(user)) {
-				Variables.setCurrentUser(u);
-				Engine.getInstance().openSafeScreen();
-				return true;
+	public void createUser(final User user) {
+		users.add(user);
+		try {
+			saveUser(user);
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void createUserDirectory(final User user) {
+		final File directory = new File(
+				Cache.USERS_PATH + File.separator + user.getUsername() + File.separator
+						+ "accounts");
+		if (!directory.exists()) {
+			directory.mkdirs();
+		}
+	}
+
+	public User getUserByName(final String username) {
+		for (final User user : users) {
+			if (user.getUsername().equalsIgnoreCase(username)) {
+				return user;
 			}
 		}
-		return false;
+		return null;
 	}
 
-	public void logOut(User user) {
-		Variables.setCurrentUser(null);
-		Engine.getInstance().openLoginScreen();
+	public ArrayList<User> getUsers() {
+		return users;
 	}
 
-	public boolean isNameAvaliable(String name) {
-		for (User user : users) {
+	public boolean isNameAvaliable(final String name) {
+		for (final User user : users) {
 			if (user.getUsername().equalsIgnoreCase(name)) {
 				return false;
 			}
@@ -50,7 +65,7 @@ public class UserManager {
 		final ArrayList<User> list = new ArrayList<User>();
 		final File userDirectory = new File(Cache.USERS_PATH);
 		if (userDirectory.exists() && userDirectory.isDirectory()) {
-			for (File file : userDirectory.listFiles()) {
+			for (final File file : userDirectory.listFiles()) {
 				try {
 					final HashMap<String, String> accountInfo = new HashMap<String, String>();
 					final BufferedEncryptionReader reader = new BufferedEncryptionReader(
@@ -72,7 +87,7 @@ public class UserManager {
 								accountInfo.get("recovery answer"),
 								accountInfo.get("key")));
 					}
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					e.printStackTrace();
 				}
 			}
@@ -80,25 +95,23 @@ public class UserManager {
 		return list;
 	}
 
-	public void createUser(User user) {
-		users.add(user);
-		try {
-			saveUser(user);
-		} catch (IOException e) {
-			e.printStackTrace();
+	public boolean logIn(final User user) {
+		for (final User u : users) {
+			if (u.equals(user)) {
+				Variables.setCurrentUser(u);
+				Engine.getInstance().openSafeScreen();
+				return true;
+			}
 		}
+		return false;
 	}
 
-	private void createUserDirectory(User user) {
-		final File directory = new File(
-				Cache.USERS_PATH + File.separator + user.getUsername() + File.separator
-						+ "accounts");
-		if (!directory.exists()) {
-			directory.mkdirs();
-		}
+	public void logOut(final User user) {
+		Variables.setCurrentUser(null);
+		Engine.getInstance().openLoginScreen();
 	}
 
-	private void saveUser(User user) throws IOException {
+	private void saveUser(final User user) throws IOException {
 		final File userFile = new File(
 				Cache.USERS_PATH + File.separator + user.getUsername() + File.separator
 						+ user.getUsername() + ".ucsafe");
@@ -110,15 +123,11 @@ public class UserManager {
 				new FileWriter(userFile),
 				Engine.getInstance().getConfig().getPropertyValue(Config.KEY),
 				Engine.getInstance().getConfig().getPropertyValue(Config.INIT_VECTOR));
-		for (String[] data : user.getData()) {
+		for (final String[] data : user.getData()) {
 			writer.write(data[0] + ":" + data[1]);
 			writer.newLine();
 		}
 		writer.close();
-	}
-
-	public ArrayList<User> getUsers() {
-		return users;
 	}
 
 }

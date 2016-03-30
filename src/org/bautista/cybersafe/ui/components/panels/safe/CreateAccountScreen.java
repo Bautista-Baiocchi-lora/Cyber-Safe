@@ -25,6 +25,11 @@ import org.bautista.cybersafe.util.account.util.AccountType;
 
 public class CreateAccountScreen extends JPanel implements ActionListener {
 	private static CreateAccountScreen instance;
+
+	public static CreateAccountScreen getInstance() {
+		return instance == null ? instance = new CreateAccountScreen() : instance;
+	}
+
 	private final GridBagConstraints constraints;
 	private final JTextField titleTextField;
 	private final JTextArea descriptionTextArea;
@@ -33,6 +38,7 @@ public class CreateAccountScreen extends JPanel implements ActionListener {
 	private final InformationFieldCreator infoFieldCreator;
 	private final ArrayList<InformationField> fields;
 	private final JOptionPane popUp;
+
 	private int nextRow = 0;
 
 	public CreateAccountScreen() {
@@ -40,7 +46,7 @@ public class CreateAccountScreen extends JPanel implements ActionListener {
 		instance = this;
 		constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.anchor = constraints.CENTER;
+		constraints.anchor = GridBagConstraints.CENTER;
 		constraints.insets = new Insets(0, 5, 7, 5);
 
 		popUp = new JOptionPane();
@@ -67,56 +73,11 @@ public class CreateAccountScreen extends JPanel implements ActionListener {
 		setListeners();
 	}
 
-	public static CreateAccountScreen getInstance() {
-		return instance == null ? instance = new CreateAccountScreen() : instance;
-	}
-
-	public void addComponent(InformationField field) {
-		fields.add(field);
-		removeComponent(infoFieldCreator);
-		addComponent(0, nextRow, 1, 1, 1, field);
-		addComponent(0, nextRow, 1, 1, 1, infoFieldCreator);
-	}
-
-	public void removeComponent(JComponent component) {
-		remove(component);
-		nextRow--;
-		if (fields.contains(component)) {
-			fields.remove(component);
-		}
-		Engine.getInstance().refreshUI();
-	}
-
-	private void addComponent(final int x, final int y, final int height, final double xweight,
-			final double yweight, final JComponent comp) {
-		constraints.gridx = x;
-		constraints.gridy = y;
-		constraints.weightx = xweight;
-		constraints.weighty = yweight;
-		constraints.gridheight = height;
-		nextRow += height;
-		add(comp, constraints);
-	}
-
-	private void setListeners() {
-		createAccount.addActionListener(this);
-		back.addActionListener(this);
-	}
-
-	private void positionComponents() {
-		addComponent(0, nextRow, 1, 1, 1, back);
-		addComponent(0, nextRow, 1, 1, 1, createAccount);
-		addComponent(0, nextRow, 1, 1, 1, title);
-		addComponent(0, nextRow, 1, 1, 1, type);
-		addComponent(0, nextRow, 1, 1, 1, description);
-		addComponent(0, nextRow, 1, 1, 1, infoFieldCreator);
-	}
-
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		String command = e.getActionCommand();
+	public void actionPerformed(final ActionEvent e) {
+		final String command = e.getActionCommand();
 		if (command.equalsIgnoreCase("back")) {
-			int reply = JOptionPane.showConfirmDialog(this,
+			final int reply = JOptionPane.showConfirmDialog(this,
 					"Do you want to save this account before exiting the account creation screen? All data will be lost otherwise.",
 					"Warning!",
 					JOptionPane.YES_NO_OPTION);
@@ -126,7 +87,7 @@ public class CreateAccountScreen extends JPanel implements ActionListener {
 			}
 		}
 		final ArrayList<AccountField> fields = new ArrayList<AccountField>();
-		for (InformationField field : this.fields) {
+		for (final InformationField field : this.fields) {
 			fields.add(
 					new AccountField(field.getFieldTitle(), field.getFieldData(),
 							field.getFieldType()));
@@ -140,15 +101,56 @@ public class CreateAccountScreen extends JPanel implements ActionListener {
 				Engine.getInstance().getAccountManager().createAccount(account);
 				Engine.getInstance().openSafeScreen();
 			} else {
-				popUp.showMessageDialog(this,
+				JOptionPane.showMessageDialog(this,
 						"This account name is already taken.",
 						"Warning!", JOptionPane.OK_OPTION);
 			}
 		} else {
-			popUp.showMessageDialog(this,
+			JOptionPane.showMessageDialog(this,
 					"Your \"Name\" field is empty. Please name the account.",
 					"Warning!", JOptionPane.OK_OPTION);
 		}
+	}
+
+	public void addComponent(final InformationField field) {
+		fields.add(field);
+		removeComponent(infoFieldCreator);
+		addComponent(0, nextRow, 1, 1, 1, field);
+		addComponent(0, nextRow, 1, 1, 1, infoFieldCreator);
+	}
+
+	private void addComponent(final int x, final int y, final int height, final double xweight,
+			final double yweight, final JComponent comp) {
+		constraints.gridx = x;
+		constraints.gridy = y;
+		constraints.weightx = xweight;
+		constraints.weighty = yweight;
+		constraints.gridheight = height;
+		nextRow += height;
+		add(comp, constraints);
+	}
+
+	private void positionComponents() {
+		addComponent(0, nextRow, 1, 1, 1, back);
+		addComponent(0, nextRow, 1, 1, 1, createAccount);
+		addComponent(0, nextRow, 1, 1, 1, title);
+		addComponent(0, nextRow, 1, 1, 1, type);
+		addComponent(0, nextRow, 1, 1, 1, description);
+		addComponent(0, nextRow, 1, 1, 1, infoFieldCreator);
+	}
+
+	public void removeComponent(final JComponent component) {
+		remove(component);
+		nextRow--;
+		if (fields.contains(component)) {
+			fields.remove(component);
+		}
+		Engine.getInstance().refreshUI();
+	}
+
+	private void setListeners() {
+		createAccount.addActionListener(this);
+		back.addActionListener(this);
 	}
 
 }

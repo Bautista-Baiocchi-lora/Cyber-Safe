@@ -14,28 +14,28 @@ public class Account implements Serializable {
 	private final AccountType type;
 	private final ArrayList<AccountField> fields;
 
-	public Account(String name, String description, AccountType type,
-			ArrayList<AccountField> fields) {
+	public Account(final String name, final String description, final AccountType type,
+			final ArrayList<AccountField> fields) {
 		this.name = name;
 		this.description = description;
 		this.type = type;
 		this.fields = fields;
 	}
 
-	public ArrayList<AccountField> getFields() {
-		return fields;
-	}
-
-	public void addField(AccountField field) {
+	public void addField(final AccountField field) {
 		fields.add(field);
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public String getDescription() {
 		return description;
+	}
+
+	public ArrayList<AccountField> getFields() {
+		return fields;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public AccountType getType() {

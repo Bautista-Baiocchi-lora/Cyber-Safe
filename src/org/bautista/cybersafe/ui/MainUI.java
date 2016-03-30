@@ -18,6 +18,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+import javax.swing.WindowConstants;
 
 import org.bautista.cybersafe.core.Engine;
 import org.bautista.cybersafe.data.Variables;
@@ -25,8 +26,8 @@ import org.bautista.cybersafe.ui.components.panels.CreateUser;
 import org.bautista.cybersafe.ui.components.panels.LoginScreen;
 import org.bautista.cybersafe.ui.components.panels.safe.AccountFilterScreen;
 import org.bautista.cybersafe.ui.components.panels.safe.AccountScroller;
-import org.bautista.cybersafe.ui.components.panels.safe.CreateAccountScreen;
 import org.bautista.cybersafe.ui.components.panels.safe.AccountViewerScreen;
+import org.bautista.cybersafe.ui.components.panels.safe.CreateAccountScreen;
 import org.bautista.cybersafe.ui.util.Scroller;
 import org.bautista.cybersafe.util.account.Account;
 
@@ -45,7 +46,7 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 
 	public MainUI() {
 		super("Cyber Safe");
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		setLayout(new BorderLayout());
 		setResizable(false);
 		setLocationRelativeTo(null);
@@ -53,6 +54,50 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 		confirmOnClose();
 		addMenuBar();
 		showLogin();
+	}
+
+	@Override
+	public void actionPerformed(final ActionEvent e) {
+		final String command = e.getActionCommand().toLowerCase();
+		final JOptionPane pane = new JOptionPane();
+		switch (command) {
+			case "quit":
+				final int result = JOptionPane.showConfirmDialog(null,
+						"Are you sure you want to close Cyber Safe?", "Warning!",
+						JOptionPane.YES_NO_OPTION);
+				if (result == JOptionPane.YES_OPTION) {
+					System.exit(0);
+				}
+				break;
+			case "new account":
+				Engine.getInstance().openCreateAccountScreen();
+				break;
+			case "user info":
+				if (Variables.getCurrentUser() != null) {
+					JOptionPane.showMessageDialog(null,
+							"Username: " + Variables.getCurrentUser().getUsername() + "\nPassword: "
+									+ Variables.getCurrentUser().getPassword()
+									+ "\nRecovery Question: "
+									+ Variables.getCurrentUser().getRecoveryQuestion()
+									+ "\nRecovery Question Answer: "
+									+ Variables.getCurrentUser().getRecoveryAnswer()
+									+ "\nEncryption Key: "
+									+ Variables.getCurrentUser().getEncryptionKey(),
+							"Information", JOptionPane.OK_OPTION);
+				}
+				break;
+			case "log out":
+				if (Variables.getCurrentUser() != null) {
+					final int reply = JOptionPane.showConfirmDialog(this,
+							"Are you sure you want to log out?", "Warning!",
+							JOptionPane.YES_NO_OPTION);
+					if (reply == JOptionPane.YES_OPTION) {
+						Engine.getInstance().logOut();
+					}
+				}
+				break;
+		}
+
 	}
 
 	private void addMenuBar() {
@@ -93,16 +138,20 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 		setJMenuBar(menu);
 	}
 
-	private void enableUserMenu(boolean i) {
-		info.setEnabled(i);
-		logout.setEnabled(i);
-		createNewAccount.setEnabled(i);
+	private void clearFrame() {
+		if (currentView != null) {
+			for (final JComponent component : currentView) {
+				remove(component);
+			}
+			currentView.clear();
+		}
 	}
 
 	public void confirmOnClose() {
-		this.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				int result = JOptionPane.showConfirmDialog(null,
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(final WindowEvent e) {
+				final int result = JOptionPane.showConfirmDialog(null,
 						"Are you sure you want to close Cyber Safe?", "Warning!",
 						JOptionPane.YES_NO_OPTION);
 				if (result == JOptionPane.YES_OPTION) {
@@ -112,8 +161,47 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 		});
 	}
 
-	public void setFrameTitle(String title) {
-		this.setTitle(title);
+	private void enableUserMenu(final boolean i) {
+		info.setEnabled(i);
+		logout.setEnabled(i);
+		createNewAccount.setEnabled(i);
+	}
+
+	public void refresh() {
+		revalidate();
+		pack();
+		repaint();
+	}
+
+	public void setFrameTitle(final String title) {
+		setTitle(title);
+	}
+
+	public void showAccount(final Account account) {
+		clearFrame();
+		viewAccountScreen = new AccountViewerScreen(account);
+		final Scroller scroller = new Scroller(viewAccountScreen, new Dimension(400, 300));
+		currentView.add(scroller);
+		add(scroller, BorderLayout.CENTER);
+		refresh();
+	}
+
+	public void showCreateAccount() {
+		clearFrame();
+		createAccountScreen = new CreateAccountScreen();
+		final Scroller scroller = new Scroller(createAccountScreen, new Dimension(400, 500));
+		currentView.add(scroller);
+		add(scroller, BorderLayout.CENTER);
+		refresh();
+	}
+
+	public void showCreateUser() {
+		clearFrame();
+		enableUserMenu(false);
+		createUserScreen = new CreateUser();
+		currentView.add(createUserScreen);
+		add(createUserScreen);
+		refresh();
 	}
 
 	public void showLogin() {
@@ -138,131 +226,45 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 		refresh();
 	}
 
-	public void showCreateUser() {
-		clearFrame();
-		enableUserMenu(false);
-		createUserScreen = new CreateUser();
-		currentView.add(createUserScreen);
-		add(createUserScreen);
-		refresh();
-	}
-
-	public void showAccount(Account account) {
-		clearFrame();
-		viewAccountScreen = new AccountViewerScreen(account);
-		final Scroller scroller = new Scroller(viewAccountScreen, new Dimension(400, 300));
-		currentView.add(scroller);
-		add(scroller, BorderLayout.CENTER);
-		refresh();
-	}
-
-	public void showCreateAccount() {
-		clearFrame();
-		createAccountScreen = new CreateAccountScreen();
-		final Scroller scroller = new Scroller(createAccountScreen, new Dimension(400, 500));
-		currentView.add(scroller);
-		add(scroller, BorderLayout.CENTER);
-		refresh();
-	}
-
-	private void clearFrame() {
-		if (currentView != null) {
-			for (JComponent component : currentView) {
-				remove(component);
-			}
-			currentView.clear();
-		}
-	}
-
-	public void refresh() {
-		revalidate();
-		pack();
-		repaint();
-	}
-
 	@Override
-	public void windowOpened(WindowEvent e) {
+	public void windowActivated(final WindowEvent e) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void windowClosing(WindowEvent e) {
+	public void windowClosed(final WindowEvent e) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void windowClosed(WindowEvent e) {
+	public void windowClosing(final WindowEvent e) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void windowIconified(WindowEvent e) {
+	public void windowDeactivated(final WindowEvent e) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void windowDeiconified(WindowEvent e) {
+	public void windowDeiconified(final WindowEvent e) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void windowActivated(WindowEvent e) {
+	public void windowIconified(final WindowEvent e) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void windowDeactivated(WindowEvent e) {
+	public void windowOpened(final WindowEvent e) {
 		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		String command = e.getActionCommand().toLowerCase();
-		JOptionPane pane = new JOptionPane();
-		switch (command) {
-			case "quit":
-				int result = JOptionPane.showConfirmDialog(null,
-						"Are you sure you want to close Cyber Safe?", "Warning!",
-						JOptionPane.YES_NO_OPTION);
-				if (result == JOptionPane.YES_OPTION) {
-					System.exit(0);
-				}
-				break;
-			case "new account":
-				Engine.getInstance().openCreateAccountScreen();
-				break;
-			case "user info":
-				if (Variables.getCurrentUser() != null) {
-					pane.showMessageDialog(null,
-							"Username: " + Variables.getCurrentUser().getUsername() + "\nPassword: "
-									+ Variables.getCurrentUser().getPassword()
-									+ "\nRecovery Question: "
-									+ Variables.getCurrentUser().getRecoveryQuestion()
-									+ "\nRecovery Question Answer: "
-									+ Variables.getCurrentUser().getRecoveryAnswer()
-									+ "\nEncryption Key: "
-									+ Variables.getCurrentUser().getEncryptionKey(),
-							"Information", JOptionPane.OK_OPTION);
-				}
-				break;
-			case "log out":
-				if (Variables.getCurrentUser() != null) {
-					int reply = JOptionPane.showConfirmDialog(this,
-							"Are you sure you want to log out?", "Warning!",
-							JOptionPane.YES_NO_OPTION);
-					if (reply == JOptionPane.YES_OPTION) {
-						Engine.getInstance().logOut();
-					}
-				}
-				break;
-		}
 
 	}
 

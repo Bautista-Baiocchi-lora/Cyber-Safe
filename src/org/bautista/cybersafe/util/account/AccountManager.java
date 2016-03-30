@@ -20,42 +20,20 @@ import org.bautista.cybersafe.util.enctryption.util.EncryptedObjectOutputStream;
 import org.bautista.cybersafe.util.user.User;
 
 public class AccountManager {
-	private ArrayList<Account> accounts;
-	private User user;
+	private final ArrayList<Account> accounts;
+	private final User user;
 
-	public AccountManager(User user) {
+	public AccountManager(final User user) {
 		this.user = user;
 		accounts = loadAccounts(user);
 	}
 
-	public ArrayList<Account> getAccounts() {
-		return accounts;
-	}
-
-	public void createAccount(Account account) {
+	public void createAccount(final Account account) {
 		accounts.add(account);
 		saveAccount(account);
 	}
 
-	public boolean isNameAvaliable(String name) {
-		for (Account account : accounts) {
-			if (account.getName().equalsIgnoreCase(name)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private void deleteAccountFile(Account account) {
-		final File accountFile = new File(Cache.USERS_PATH + File.separator
-				+ Variables.getCurrentUser().getUsername() + File.separator + "accounts"
-				+ File.separator + account.getName() + ".acsafe");
-		if (accountFile.exists()) {
-			accountFile.delete();
-		}
-	}
-
-	public void deleteAccount(Account account) {
+	public void deleteAccount(final Account account) {
 		if (account != null) {
 			if (accounts.contains(account)) {
 				deleteAccountFile(account);
@@ -64,9 +42,9 @@ public class AccountManager {
 		}
 	}
 
-	public void deleteAccount(String name) {
+	public void deleteAccount(final String name) {
 		Account acc = null;
-		for (Account account : accounts) {
+		for (final Account account : accounts) {
 			if (account.getName().equalsIgnoreCase(name)) {
 				acc = account;
 				break;
@@ -78,7 +56,52 @@ public class AccountManager {
 		}
 	}
 
-	private void saveAccount(Account account) {
+	private void deleteAccountFile(final Account account) {
+		final File accountFile = new File(Cache.USERS_PATH + File.separator
+				+ Variables.getCurrentUser().getUsername() + File.separator + "accounts"
+				+ File.separator + account.getName() + ".acsafe");
+		if (accountFile.exists()) {
+			accountFile.delete();
+		}
+	}
+
+	public ArrayList<Account> getAccounts() {
+		return accounts;
+	}
+
+	public boolean isNameAvaliable(final String name) {
+		for (final Account account : accounts) {
+			if (account.getName().equalsIgnoreCase(name)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private ArrayList<Account> loadAccounts(final User user) {
+		final ArrayList<Account> list = new ArrayList<Account>();
+		final File userDirectory = new File(Cache.USERS_PATH + File.separator
+				+ Variables.getCurrentUser().getUsername() + File.separator + "accounts");
+		if (userDirectory.exists()) {
+			for (final File file : userDirectory.listFiles()) {
+				try {
+					final FileInputStream inputStream = new FileInputStream(file.getAbsolutePath());
+					final EncryptedObjectInputStream encryptedStream = new EncryptedObjectInputStream(
+							inputStream, Variables.getCurrentUser().getEncryptionKey(),
+							Engine.getInstance().getConfig().getPropertyValue(Config.INIT_VECTOR));
+					final Account account = (Account) encryptedStream.readEncryptedObject();
+					if (account != null) {
+						list.add(account);
+					}
+				} catch (final Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return list;
+	}
+
+	private void saveAccount(final Account account) {
 		final File userDirectory = new File(Cache.USERS_PATH + File.separator
 				+ Variables.getCurrentUser().getUsername() + File.separator + "accounts");
 		if (userDirectory.exists()) {
@@ -97,29 +120,6 @@ public class AccountManager {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	private ArrayList<Account> loadAccounts(User user) {
-		final ArrayList<Account> list = new ArrayList<Account>();
-		final File userDirectory = new File(Cache.USERS_PATH + File.separator
-				+ Variables.getCurrentUser().getUsername() + File.separator + "accounts");
-		if (userDirectory.exists()) {
-			for (File file : userDirectory.listFiles()) {
-				try {
-					final FileInputStream inputStream = new FileInputStream(file.getAbsolutePath());
-					final EncryptedObjectInputStream encryptedStream = new EncryptedObjectInputStream(
-							inputStream, Variables.getCurrentUser().getEncryptionKey(),
-							Engine.getInstance().getConfig().getPropertyValue(Config.INIT_VECTOR));
-					final Account account = (Account) encryptedStream.readEncryptedObject();
-					if (account != null) {
-						list.add(account);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return list;
 	}
 
 }

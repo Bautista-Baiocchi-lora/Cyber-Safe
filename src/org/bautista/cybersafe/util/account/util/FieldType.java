@@ -17,7 +17,7 @@ public enum FieldType implements Serializable {
 	private JComponent component;
 	private String type;
 
-	FieldType(JComponent component, String type) {
+	FieldType(final JComponent component, final String type) {
 		this.component = component;
 		this.type = type;
 	}

@@ -26,73 +26,18 @@ public class Encryptor {
 	private static final String TRANSFORMATION = "AES/CBC/PKCS5Padding";
 	private static final String ALGORITHM = "AES";
 
-	public static String encrypt(String key, String initVector, String value) {
-		try {
-			IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
-			SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes(), ALGORITHM);
-
-			Cipher cipher = Cipher.getInstance(TRANSFORMATION);
-			cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
-
-			byte[] encrypted = cipher.doFinal(value.getBytes());
-
-			return Base64.encodeBase64String(encrypted);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		return null;
-	}
-
-	public static String decrypt(String key, String initVector, String encrypted) {
-		try {
-			IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
-			SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), ALGORITHM);
-
-			Cipher cipher = Cipher.getInstance(TRANSFORMATION);
-			cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
-
-			byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));
-
-			return new String(original);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-		return null;
-	}
-
-	public static void encrypt(String key, String initVector, OutputStream ostream,
-			Serializable object)
-			throws IOException, NoSuchAlgorithmException, NoSuchPaddingException,
-			InvalidKeyException, InvalidAlgorithmParameterException {
-		try {
-			IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
-			SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), ALGORITHM);
-
-			Cipher cipher = Cipher.getInstance(TRANSFORMATION);
-			cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
-			SealedObject sealedObject = new SealedObject(object, cipher);
-
-			CipherOutputStream cos = new CipherOutputStream(ostream, cipher);
-			ObjectOutputStream outputStream = new ObjectOutputStream(cos);
-			outputStream.writeObject(sealedObject);
-			outputStream.close();
-		} catch (IllegalBlockSizeException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static Object decrypt(String key, String initVector, InputStream istream)
+	public static Object decrypt(final String key, final String initVector,
+			final InputStream istream)
 			throws IOException, NoSuchAlgorithmException,
 			NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
-		IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
-		SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), ALGORITHM);
+		final IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
+		final SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), ALGORITHM);
 
-		Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+		final Cipher cipher = Cipher.getInstance(TRANSFORMATION);
 		cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
 
-		CipherInputStream cipherInputStream = new CipherInputStream(istream, cipher);
-		ObjectInputStream inputStream = new ObjectInputStream(cipherInputStream);
+		final CipherInputStream cipherInputStream = new CipherInputStream(istream, cipher);
+		final ObjectInputStream inputStream = new ObjectInputStream(cipherInputStream);
 		SealedObject sealedObject;
 		try {
 			sealedObject = (SealedObject) inputStream.readObject();
@@ -101,5 +46,63 @@ public class Encryptor {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public static String decrypt(final String key, final String initVector,
+			final String encrypted) {
+		try {
+			final IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
+			final SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), ALGORITHM);
+
+			final Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+			cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
+
+			final byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));
+
+			return new String(original);
+		} catch (final Exception ex) {
+			ex.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public static void encrypt(final String key, final String initVector,
+			final OutputStream ostream,
+			final Serializable object)
+			throws IOException, NoSuchAlgorithmException, NoSuchPaddingException,
+			InvalidKeyException, InvalidAlgorithmParameterException {
+		try {
+			final IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
+			final SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), ALGORITHM);
+
+			final Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+			cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
+			final SealedObject sealedObject = new SealedObject(object, cipher);
+
+			final CipherOutputStream cos = new CipherOutputStream(ostream, cipher);
+			final ObjectOutputStream outputStream = new ObjectOutputStream(cos);
+			outputStream.writeObject(sealedObject);
+			outputStream.close();
+		} catch (final IllegalBlockSizeException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static String encrypt(final String key, final String initVector, final String value) {
+		try {
+			final IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
+			final SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes(), ALGORITHM);
+
+			final Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+			cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
+
+			final byte[] encrypted = cipher.doFinal(value.getBytes());
+
+			return Base64.encodeBase64String(encrypted);
+		} catch (final Exception ex) {
+			ex.printStackTrace();
+		}
+		return null;
 	}
 }

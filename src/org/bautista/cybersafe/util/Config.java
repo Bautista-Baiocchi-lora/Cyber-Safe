@@ -25,25 +25,14 @@ public class Config {
 			if (createConfig()) {
 				properties = loadProperties();
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public String getPropertyValue(String key) {
-		return properties.getProperty(key);
-	}
-
-	public Properties getProperties() {
-		return properties;
-	}
-
-	private Properties loadProperties() throws IOException {
-		final InputStream input = new FileInputStream(CONFIG_FILE_PATH);
-		final Properties properties = new Properties();
-		properties.load(input);
-		input.close();
-		return properties;
+	private boolean configExists() {
+		final File config = new File(CONFIG_FILE_PATH);
+		return config.exists();
 	}
 
 	private boolean createConfig() throws IOException {
@@ -63,6 +52,22 @@ public class Config {
 		return configExists();
 	}
 
+	public Properties getProperties() {
+		return properties;
+	}
+
+	public String getPropertyValue(final String key) {
+		return properties.getProperty(key);
+	}
+
+	private Properties loadProperties() throws IOException {
+		final InputStream input = new FileInputStream(CONFIG_FILE_PATH);
+		final Properties properties = new Properties();
+		properties.load(input);
+		input.close();
+		return properties;
+	}
+
 	public void setProperty(final String key, final String value) throws IOException {
 		if (configExists()) {
 			final InputStream input = new FileInputStream(CONFIG_FILE_PATH);
@@ -74,11 +79,6 @@ public class Config {
 			output.close();
 			input.close();
 		}
-	}
-
-	private boolean configExists() {
-		File config = new File(CONFIG_FILE_PATH);
-		return config.exists();
 	}
 
 }

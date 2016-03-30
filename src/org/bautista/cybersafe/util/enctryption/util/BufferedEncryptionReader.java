@@ -7,19 +7,20 @@ import java.io.Reader;
 import org.bautista.cybersafe.util.enctryption.Encryptor;
 
 public class BufferedEncryptionReader extends BufferedReader {
-	private String key;
-	private String vector;
+	private final String key;
+	private final String vector;
 
-	public BufferedEncryptionReader(Reader reader, String key, String vector) {
+	public BufferedEncryptionReader(final Reader reader, final String key, final String vector) {
 		super(reader);
 		this.key = key;
 		this.vector = vector;
 	}
 
+	@Override
 	public String readLine() throws IOException {
-		String encryptedLine = super.readLine();
+		final String encryptedLine = super.readLine();
 		if (encryptedLine != null) {
-			String decryptedLine = Encryptor.decrypt(key, vector, encryptedLine);
+			final String decryptedLine = Encryptor.decrypt(key, vector, encryptedLine);
 			return decryptedLine;
 		}
 		return null;

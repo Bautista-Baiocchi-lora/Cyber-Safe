@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.bautista.cybersafe.core.Engine;
 import org.bautista.cybersafe.util.enctryption.util.KeyGenerator;
@@ -33,7 +34,7 @@ public class CreateUser extends JPanel implements ActionListener {
 		setLayout(new GridBagLayout());
 		constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.anchor = constraints.NORTHWEST;
+		constraints.anchor = GridBagConstraints.NORTHWEST;
 		constraints.insets = new Insets(10, 4, 4, 5);
 
 		popUp = new JOptionPane();
@@ -42,14 +43,14 @@ public class CreateUser extends JPanel implements ActionListener {
 		password = new JPasswordField();
 		key = new JPasswordField();
 		confirmKey = new JPasswordField();
-		usernameLabel = new JLabel("Username: ", JLabel.TRAILING);
-		keyLabel = new JLabel("Encryption Key: ", JLabel.TRAILING);
-		passwordLabel = new JLabel("Password: ", JLabel.TRAILING);
-		confirmKeyLabel = new JLabel("Cofirm Key: ", JLabel.TRAILING);
-		confirmPasswordLabel = new JLabel("Confirm Password: ", JLabel.TRAILING);
-		recoveryQuestionLabel = new JLabel("Recovery Question: ", JLabel.TRAILING);
+		usernameLabel = new JLabel("Username: ", SwingConstants.TRAILING);
+		keyLabel = new JLabel("Encryption Key: ", SwingConstants.TRAILING);
+		passwordLabel = new JLabel("Password: ", SwingConstants.TRAILING);
+		confirmKeyLabel = new JLabel("Cofirm Key: ", SwingConstants.TRAILING);
+		confirmPasswordLabel = new JLabel("Confirm Password: ", SwingConstants.TRAILING);
+		recoveryQuestionLabel = new JLabel("Recovery Question: ", SwingConstants.TRAILING);
 		recoveryQuestion = new JTextField();
-		recoveryAnswerLabel = new JLabel("Recovery Answer: ", JLabel.TRAILING);
+		recoveryAnswerLabel = new JLabel("Recovery Answer: ", SwingConstants.TRAILING);
 		recoveryAnswer = new JTextField();
 		create = new JButton("Create Account");
 		create.addActionListener(this);
@@ -62,6 +63,35 @@ public class CreateUser extends JPanel implements ActionListener {
 		positionComponents();
 	}
 
+	@Override
+	public void actionPerformed(final ActionEvent e) {
+		final String command = e.getActionCommand().toLowerCase();
+		switch (command) {
+			case "create account":
+				if (usernameIsValid() && passwordIsValid() && keyIsValid()
+						&& recoveryQuestionIsValid() && recoveryAnsswerIsValid()) {
+					final User user = new User(username.getText(),
+							String.valueOf(password.getPassword()), recoveryQuestion.getText(),
+							recoveryAnswer.getText(),
+							String.valueOf(key.getPassword()));
+					Engine.getInstance().getUserManager().createUser(user);
+					Engine.getInstance().getUserManager().logIn(user);
+				}
+				break;
+			case "generate key":
+				final String newKey = KeyGenerator.getNewKey();
+				key.setText(newKey);
+				confirmKey.setText(newKey);
+				JOptionPane.showMessageDialog(this, "Your new key is: " + newKey
+						+ "\nPlease write it down somewhere you wont forget. You can not access any of your information without it.",
+						"Warning!", JOptionPane.OK_OPTION);
+				break;
+			case "back":
+				Engine.getInstance().openLoginScreen();
+				break;
+		}
+	}
+
 	private void addComponent(final int x, final int y, final int width, final double xweight,
 			final double yweight,
 			final JComponent comp) {
@@ -71,6 +101,59 @@ public class CreateUser extends JPanel implements ActionListener {
 		constraints.weighty = yweight;
 		constraints.gridwidth = width;
 		add(comp, constraints);
+	}
+
+	private boolean containsInvalidCharacters(final String username) {
+		for (final char c : username.toCharArray()) {
+			for (final char element : INVALID_CHARACTERS) {
+				if (c == element) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean keyIsValid() {
+		boolean tooShort = true;
+		final char[] eKey = key.getPassword();
+		final char[] confirmEKey = confirmKey.getPassword();
+		if (eKey.length == 16) {
+			tooShort = false;
+			if (Arrays.equals(eKey, confirmEKey)) {
+				return true;
+			}
+			JOptionPane.showMessageDialog(this,
+					"Your Encryption Keys don't match. Remember, you can always have one automatically generated for you.",
+					"Warning!", JOptionPane.OK_OPTION);
+		}
+		if (tooShort) {
+			JOptionPane.showMessageDialog(this,
+					"Your Encryption Key is too short. Make sure it is exactly 16 characters long. Remember, you can always have one automatically generated for you.",
+					"Warning!", JOptionPane.OK_OPTION);
+
+		}
+		return false;
+	}
+
+	private boolean passwordIsValid() {
+		boolean tooShort = true;
+		final char[] pass = password.getPassword();
+		final char[] confirmPass = confirmPassword.getPassword();
+		if (pass.length > 6) {
+			tooShort = false;
+			if (Arrays.equals(pass, confirmPass)) {
+				return true;
+			}
+			JOptionPane.showMessageDialog(this,
+					"Your password's dont match.", "Warning!", JOptionPane.OK_OPTION);
+		}
+		if (tooShort) {
+			JOptionPane.showMessageDialog(this,
+					"Your password is too short. Make sure it is at least 6 characters long.",
+					"Warning!", JOptionPane.OK_OPTION);
+		}
+		return false;
 	}
 
 	private void positionComponents() {
@@ -101,25 +184,13 @@ public class CreateUser extends JPanel implements ActionListener {
 		addComponent(0, 8, 4, 1, .7, back);
 	}
 
-	private boolean keyIsValid() {
-		boolean tooShort = true;
-		char[] eKey = key.getPassword();
-		char[] confirmEKey = confirmKey.getPassword();
-		if (eKey.length == 16) {
-			tooShort = false;
-			if (Arrays.equals(eKey, confirmEKey)) {
-				return true;
-			}
-			popUp.showMessageDialog(this,
-					"Your Encryption Keys don't match. Remember, you can always have one automatically generated for you.",
-					"Warning!", JOptionPane.OK_OPTION);
+	private boolean recoveryAnsswerIsValid() {
+		if (recoveryAnswer.getText().length() >= 1) {
+			return true;
 		}
-		if (tooShort) {
-			popUp.showMessageDialog(this,
-					"Your Encryption Key is too short. Make sure it is exactly 16 characters long. Remember, you can always have one automatically generated for you.",
-					"Warning!", JOptionPane.OK_OPTION);
-
-		}
+		JOptionPane.showMessageDialog(this,
+				"You left your recovery answer blank! Make sure to make a password you will remember the answer to. It is the only way to recover your password.",
+				"Warning!", JOptionPane.OK_OPTION);
 		return false;
 	}
 
@@ -127,50 +198,9 @@ public class CreateUser extends JPanel implements ActionListener {
 		if (recoveryQuestion.getText().length() >= 1) {
 			return true;
 		}
-		popUp.showMessageDialog(this,
+		JOptionPane.showMessageDialog(this,
 				"You left your recovery question blank! Make sure to make a question you will remember the answer to. It is the only way to recover your password.",
 				"Warning!", JOptionPane.OK_OPTION);
-		return false;
-	}
-
-	private boolean recoveryAnsswerIsValid() {
-		if (recoveryAnswer.getText().length() >= 1) {
-			return true;
-		}
-		popUp.showMessageDialog(this,
-				"You left your recovery answer blank! Make sure to make a password you will remember the answer to. It is the only way to recover your password.",
-				"Warning!", JOptionPane.OK_OPTION);
-		return false;
-	}
-
-	private boolean passwordIsValid() {
-		boolean tooShort = true;
-		char[] pass = password.getPassword();
-		char[] confirmPass = confirmPassword.getPassword();
-		if (pass.length > 6) {
-			tooShort = false;
-			if (Arrays.equals(pass, confirmPass)) {
-				return true;
-			}
-			popUp.showMessageDialog(this,
-					"Your password's dont match.", "Warning!", JOptionPane.OK_OPTION);
-		}
-		if (tooShort) {
-			popUp.showMessageDialog(this,
-					"Your password is too short. Make sure it is at least 6 characters long.",
-					"Warning!", JOptionPane.OK_OPTION);
-		}
-		return false;
-	}
-
-	private boolean containsInvalidCharacters(String username) {
-		for (char c : username.toCharArray()) {
-			for (int i = 0; i < INVALID_CHARACTERS.length; i++) {
-				if (c == INVALID_CHARACTERS[i]) {
-					return true;
-				}
-			}
-		}
 		return false;
 	}
 
@@ -184,49 +214,20 @@ public class CreateUser extends JPanel implements ActionListener {
 				if (Engine.getInstance().getUserManager().isNameAvaliable(username.getText())) {
 					return true;
 				}
-				popUp.showMessageDialog(this, "That username is already taken.", "Warning!",
+				JOptionPane.showMessageDialog(this, "That username is already taken.", "Warning!",
 						JOptionPane.OK_OPTION);
 			}
 		}
 		if (tooShort) {
-			popUp.showMessageDialog(this,
+			JOptionPane.showMessageDialog(this,
 					"Your username must be at least 4 characters long.", "Warning!",
 					JOptionPane.OK_OPTION);
 		} else if (invalidChar) {
-			popUp.showMessageDialog(this,
+			JOptionPane.showMessageDialog(this,
 					"Your username contains invalid characters. Please refrain from using the following characters in your username: ' \" ', ' \\ ', ' / ', ' * ', ' | ', ' ? ', ' : ', ' < ', ' > '",
 					"Warning!", JOptionPane.OK_OPTION);
 		}
 		return false;
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		String command = e.getActionCommand().toLowerCase();
-		switch (command) {
-			case "create account":
-				if (usernameIsValid() && passwordIsValid() && keyIsValid()
-						&& recoveryQuestionIsValid() && recoveryAnsswerIsValid()) {
-					final User user = new User(username.getText(),
-							String.valueOf(password.getPassword()), recoveryQuestion.getText(),
-							recoveryAnswer.getText(),
-							String.valueOf(key.getPassword()));
-					Engine.getInstance().getUserManager().createUser(user);
-					Engine.getInstance().getUserManager().logIn(user);
-				}
-				break;
-			case "generate key":
-				String newKey = KeyGenerator.getNewKey();
-				key.setText(newKey);
-				confirmKey.setText(newKey);
-				popUp.showMessageDialog(this, "Your new key is: " + newKey
-						+ "\nPlease write it down somewhere you wont forget. You can not access any of your information without it.",
-						"Warning!", JOptionPane.OK_OPTION);
-				break;
-			case "back":
-				Engine.getInstance().openLoginScreen();
-				break;
-		}
 	}
 
 }

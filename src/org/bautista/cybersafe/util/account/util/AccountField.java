@@ -8,18 +8,18 @@ public class AccountField implements Serializable {
 	private final FieldType type;
 	private final String data;
 
-	public AccountField(String title, String data, FieldType type) {
+	public AccountField(final String title, final String data, final FieldType type) {
 		this.title = title;
 		this.type = type;
 		this.data = data;
 	}
 
-	public String getTitle() {
-		return title;
-	}
-
 	public String getData() {
 		return data;
+	}
+
+	public String getTitle() {
+		return title;
 	}
 
 	public FieldType getType() {
