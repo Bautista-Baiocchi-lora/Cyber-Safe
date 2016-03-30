@@ -84,11 +84,12 @@ public class AccountManager {
 				+ Variables.getCurrentUser().getUsername() + File.separator + "accounts");
 		if (userDirectory.exists()) {
 			for (final File file : userDirectory.listFiles()) {
-				try {
-					final FileInputStream inputStream = new FileInputStream(file.getAbsolutePath());
-					final EncryptedObjectInputStream encryptedStream = new EncryptedObjectInputStream(
-							inputStream, Variables.getCurrentUser().getEncryptionKey(),
-							Engine.getInstance().getConfig().getPropertyValue(Config.INIT_VECTOR));
+				try (final FileInputStream inputStream = new FileInputStream(
+						file.getAbsolutePath());
+						final EncryptedObjectInputStream encryptedStream = new EncryptedObjectInputStream(
+								inputStream, Variables.getCurrentUser().getEncryptionKey(),
+								Engine.getInstance().getConfig()
+										.getPropertyValue(Config.INIT_VECTOR));) {
 					final Account account = (Account) encryptedStream.readEncryptedObject();
 					if (account != null) {
 						list.add(account);
@@ -108,13 +109,12 @@ public class AccountManager {
 			final File accountFile = new File(Cache.USERS_PATH + File.separator
 					+ Variables.getCurrentUser().getUsername() + File.separator + "accounts"
 					+ File.separator + account.getName() + ".acsafe");
-			try {
-				final FileOutputStream outputStream = new FileOutputStream(accountFile);
-				final EncryptedObjectOutputStream encryptedStream = new EncryptedObjectOutputStream(
-						outputStream, Variables.getCurrentUser().getEncryptionKey(),
-						Engine.getInstance().getConfig().getPropertyValue(Config.INIT_VECTOR));
+			try (final FileOutputStream outputStream = new FileOutputStream(accountFile);
+					final EncryptedObjectOutputStream encryptedStream = new EncryptedObjectOutputStream(
+							outputStream, Variables.getCurrentUser().getEncryptionKey(),
+							Engine.getInstance().getConfig()
+									.getPropertyValue(Config.INIT_VECTOR));) {
 				encryptedStream.writeEncryptedObject(account);
-				encryptedStream.close();
 			} catch (IOException | InvalidKeyException | NoSuchAlgorithmException
 					| NoSuchPaddingException | InvalidAlgorithmParameterException e) {
 				e.printStackTrace();

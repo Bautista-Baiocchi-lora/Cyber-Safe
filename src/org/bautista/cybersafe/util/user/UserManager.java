@@ -66,15 +66,14 @@ public class UserManager {
 		final File userDirectory = new File(Cache.USERS_PATH);
 		if (userDirectory.exists() && userDirectory.isDirectory()) {
 			for (final File file : userDirectory.listFiles()) {
-				try {
+				try (final BufferedEncryptionReader reader = new BufferedEncryptionReader(
+						new FileReader(
+								file.getAbsolutePath() + File.separator + file.getName()
+										+ ".ucsafe"),
+						Engine.getInstance().getConfig().getPropertyValue(Config.KEY),
+						Engine.getInstance().getConfig()
+								.getPropertyValue(Config.INIT_VECTOR));) {
 					final HashMap<String, String> accountInfo = new HashMap<String, String>();
-					final BufferedEncryptionReader reader = new BufferedEncryptionReader(
-							new FileReader(
-									file.getAbsolutePath() + File.separator + file.getName()
-											+ ".ucsafe"),
-							Engine.getInstance().getConfig().getPropertyValue(Config.KEY),
-							Engine.getInstance().getConfig()
-									.getPropertyValue(Config.INIT_VECTOR));
 					String sCurrentLine;
 					while ((sCurrentLine = reader.readLine()) != null) {
 						if (sCurrentLine.contains(":")) {
