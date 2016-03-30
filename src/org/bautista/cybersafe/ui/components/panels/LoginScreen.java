@@ -21,7 +21,7 @@ import org.bautista.cybersafe.util.user.User;
 public class LoginScreen extends JPanel implements ActionListener {
 	private final JTextField username;
 	private final JPasswordField password, key;
-	private final JButton login, createAccount;
+	private final JButton login, createAccount, recoverPassword;
 	private final JLabel usernameLabel, passwordLabel, keyLabel;
 	private int loginAttempts = 0;
 	private final JOptionPane popUp;
@@ -34,7 +34,7 @@ public class LoginScreen extends JPanel implements ActionListener {
 		constraints.anchor = constraints.NORTHWEST;
 		constraints.weightx = 1;
 		constraints.weighty = 1;
-		constraints.insets = new Insets(10, 5, 5, 3);
+		constraints.insets = new Insets(8, 5, 3, 3);
 
 		username = new JTextField();
 		password = new JPasswordField();
@@ -43,14 +43,14 @@ public class LoginScreen extends JPanel implements ActionListener {
 		keyLabel = new JLabel("Encryption Key: ", JLabel.TRAILING);
 		passwordLabel = new JLabel("Password: ", JLabel.TRAILING);
 		login = new JButton("Login");
-		login.addActionListener(this);
 		createAccount = new JButton("Create New Account");
-		createAccount.addActionListener(this);
+		recoverPassword = new JButton("Recover Password");
 
 		popUp = new JOptionPane();
 
 		positionComponents();
-		setPreferredSize(new Dimension(300, 175));
+		setListeners();
+		setPreferredSize(new Dimension(300, 220));
 	}
 
 	private void addComponent(final int x, final int y, final int width, final double xweight,
@@ -64,6 +64,12 @@ public class LoginScreen extends JPanel implements ActionListener {
 		add(comp, constraints);
 	}
 
+	private void setListeners() {
+		recoverPassword.addActionListener(this);
+		createAccount.addActionListener(this);
+		login.addActionListener(this);
+	}
+
 	private void positionComponents() {
 		addComponent(0, 0, 1, .1, 1, usernameLabel);
 		addComponent(1, 0, 3, 1, 1, username);
@@ -71,8 +77,9 @@ public class LoginScreen extends JPanel implements ActionListener {
 		addComponent(1, 1, 3, 1, 1, password);
 		addComponent(0, 2, 1, .1, 1, keyLabel);
 		addComponent(1, 2, 3, 1, 1, key);
-		addComponent(0, 3, 4, 1, .7, login);
-		addComponent(0, 4, 4, 1, .7, createAccount);
+		addComponent(0, 3, 4, 1, .5, login);
+		addComponent(0, 4, 4, 1, .5, recoverPassword);
+		addComponent(0, 5, 4, 1, .5, createAccount);
 	}
 
 	@Override
@@ -93,8 +100,10 @@ public class LoginScreen extends JPanel implements ActionListener {
 				popUp.showMessageDialog(this,
 						"You have exceded the amount of login attempts. Please wait 30 seconds before trying again.");
 			}
-		} else {
+		} else if (command.equalsIgnoreCase("Create New Account")) {
 			Engine.getInstance().openCreateUserScreen();
+		} else {
+			System.out.println("Recover password prompt");
 		}
 	}
 

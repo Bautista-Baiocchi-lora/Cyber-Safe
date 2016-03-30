@@ -20,11 +20,11 @@ import org.bautista.cybersafe.util.enctryption.util.KeyGenerator;
 import org.bautista.cybersafe.util.user.User;
 
 public class CreateUser extends JPanel implements ActionListener {
-	private final JTextField username;
+	private final JTextField username, recoveryQuestion, recoveryAnswer;
 	private final JPasswordField password, confirmPassword, confirmKey, key;
 	private final JButton create, generateKey, back;
 	private final JLabel usernameLabel, passwordLabel, keyLabel, confirmPasswordLabel,
-			confirmKeyLabel;
+			confirmKeyLabel, recoveryQuestionLabel, recoveryAnswerLabel;
 	private final GridBagConstraints constraints;
 	private final JOptionPane popUp;
 	private final char[] INVALID_CHARACTERS = { '"', '*', '/', ':', '<', '>', '?', '|', '\\' };
@@ -47,6 +47,10 @@ public class CreateUser extends JPanel implements ActionListener {
 		passwordLabel = new JLabel("Password: ", JLabel.TRAILING);
 		confirmKeyLabel = new JLabel("Cofirm Key: ", JLabel.TRAILING);
 		confirmPasswordLabel = new JLabel("Confirm Password: ", JLabel.TRAILING);
+		recoveryQuestionLabel = new JLabel("Recovery Question: ", JLabel.TRAILING);
+		recoveryQuestion = new JTextField();
+		recoveryAnswerLabel = new JLabel("Recovery Answer: ", JLabel.TRAILING);
+		recoveryAnswer = new JTextField();
 		create = new JButton("Create Account");
 		create.addActionListener(this);
 		generateKey = new JButton("Generate Encryption Key");
@@ -85,10 +89,16 @@ public class CreateUser extends JPanel implements ActionListener {
 		addComponent(0, 4, 1, .1, 1, confirmKeyLabel);
 		addComponent(1, 4, 4, 1, 1, confirmKey);
 
-		addComponent(0, 5, 1, 1, .7, generateKey);
-		addComponent(1, 5, 3, 1, .7, create);
+		addComponent(0, 5, 1, .1, 1, recoveryQuestionLabel);
+		addComponent(1, 5, 1, 1, 1, recoveryQuestion);
 
-		addComponent(0, 6, 4, 1, .7, back);
+		addComponent(0, 6, 1, .1, 1, recoveryAnswerLabel);
+		addComponent(1, 6, 1, 1, 1, recoveryAnswer);
+
+		addComponent(0, 7, 1, 1, .7, generateKey);
+		addComponent(1, 7, 3, 1, .7, create);
+
+		addComponent(0, 8, 4, 1, .7, back);
 	}
 
 	private boolean keyIsValid() {
@@ -110,6 +120,26 @@ public class CreateUser extends JPanel implements ActionListener {
 					"Warning!", JOptionPane.OK_OPTION);
 
 		}
+		return false;
+	}
+
+	private boolean recoveryQuestionIsValid() {
+		if (recoveryQuestion.getText().length() >= 1) {
+			return true;
+		}
+		popUp.showMessageDialog(this,
+				"You left your recovery question blank! Make sure to make a question you will remember the answer to. It is the only way to recover your password.",
+				"Warning!", JOptionPane.OK_OPTION);
+		return false;
+	}
+
+	private boolean recoveryAnsswerIsValid() {
+		if (recoveryAnswer.getText().length() >= 1) {
+			return true;
+		}
+		popUp.showMessageDialog(this,
+				"You left your recovery answer blank! Make sure to make a password you will remember the answer to. It is the only way to recover your password.",
+				"Warning!", JOptionPane.OK_OPTION);
 		return false;
 	}
 
@@ -175,9 +205,11 @@ public class CreateUser extends JPanel implements ActionListener {
 		String command = e.getActionCommand().toLowerCase();
 		switch (command) {
 			case "create account":
-				if (usernameIsValid() && passwordIsValid() && keyIsValid()) {
+				if (usernameIsValid() && passwordIsValid() && keyIsValid()
+						&& recoveryQuestionIsValid() && recoveryAnsswerIsValid()) {
 					final User user = new User(username.getText(),
-							String.valueOf(password.getPassword()),
+							String.valueOf(password.getPassword()), recoveryQuestion.getText(),
+							recoveryAnswer.getText(),
 							String.valueOf(key.getPassword()));
 					Engine.getInstance().getUserManager().createUser(user);
 					Engine.getInstance().getUserManager().logIn(user);

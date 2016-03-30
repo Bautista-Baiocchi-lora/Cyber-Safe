@@ -66,8 +66,10 @@ public class UserManager {
 							accountInfo.put(sCurrentLine.split(":")[0], sCurrentLine.split(":")[1]);
 						}
 					}
-					if (accountInfo.size() >= 3) {
+					if (accountInfo.size() >= 5) {
 						list.add(new User(accountInfo.get("name"), accountInfo.get("password"),
+								accountInfo.get("recovery question"),
+								accountInfo.get("recovery answer"),
 								accountInfo.get("key")));
 					}
 				} catch (IOException e) {

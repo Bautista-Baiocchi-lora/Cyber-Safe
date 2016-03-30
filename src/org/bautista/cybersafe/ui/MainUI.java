@@ -38,7 +38,7 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 	private CreateAccountScreen createAccountScreen;
 	private JMenuBar menu;
 	private JMenu account, file, user;
-	private JMenuItem info, logout, quit, createNewAccount, recoverPassword;
+	private JMenuItem info, logout, quit, createNewAccount;
 	private AccountFilterScreen filterScreen;
 	private AccountViewerScreen viewAccountScreen;
 	private final ArrayList<JComponent> currentView;
@@ -65,11 +65,6 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 		file.add(account);
 		file.add(user);
 
-		recoverPassword = new JMenuItem("Recover Password", 'r');
-		recoverPassword.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK));
-		recoverPassword.setActionCommand("recover password");
-		recoverPassword.addActionListener(this);
-		user.add(recoverPassword);
 		info = new JMenuItem("Information", 'i');
 		info.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, Event.CTRL_MASK));
 		info.setActionCommand("user info");
@@ -102,7 +97,6 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 		info.setEnabled(i);
 		logout.setEnabled(i);
 		createNewAccount.setEnabled(i);
-		recoverPassword.setEnabled(i == true ? false : true);
 	}
 
 	public void confirmOnClose() {
@@ -249,6 +243,10 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 					pane.showMessageDialog(null,
 							"Username: " + Variables.getCurrentUser().getUsername() + "\nPassword: "
 									+ Variables.getCurrentUser().getPassword()
+									+ "\nRecovery Question: "
+									+ Variables.getCurrentUser().getRecoveryQuestion()
+									+ "\nRecovery Question Answer: "
+									+ Variables.getCurrentUser().getRecoveryAnswer()
 									+ "\nEncryption Key: "
 									+ Variables.getCurrentUser().getEncryptionKey(),
 							"Information", JOptionPane.OK_OPTION);
@@ -263,9 +261,6 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 						Engine.getInstance().logOut();
 					}
 				}
-				break;
-			case "recover password":
-				System.out.println("Recover password");
 				break;
 		}
 
