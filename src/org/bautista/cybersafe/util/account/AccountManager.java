@@ -15,7 +15,6 @@ import org.bautista.cybersafe.core.Engine;
 import org.bautista.cybersafe.data.Variables;
 import org.bautista.cybersafe.util.Cache;
 import org.bautista.cybersafe.util.Config;
-import org.bautista.cybersafe.util.account.util.AccountType;
 import org.bautista.cybersafe.util.enctryption.util.EncryptedObjectInputStream;
 import org.bautista.cybersafe.util.enctryption.util.EncryptedObjectOutputStream;
 import org.bautista.cybersafe.util.user.User;
@@ -76,7 +75,7 @@ public class AccountManager {
 	}
 
 	private void deleteAccountFile(final Account account) {
-		final File accountFile = new File(Cache.USERS_PATH + File.separator
+		final File accountFile = new File(Cache.USER_FOLDER.getAbsoluteFile() + File.separator
 				+ Variables.getCurrentUser().getUsername() + File.separator + "accounts"
 				+ File.separator + account.getName() + ".acsafe");
 		if (accountFile.exists()) {
@@ -99,7 +98,7 @@ public class AccountManager {
 
 	private ArrayList<Account> loadAccounts(final User user) {
 		final ArrayList<Account> list = new ArrayList<Account>();
-		final File userDirectory = new File(Cache.USERS_PATH + File.separator
+		final File userDirectory = new File(Cache.USER_FOLDER.getAbsoluteFile() + File.separator
 				+ Variables.getCurrentUser().getUsername() + File.separator + "accounts");
 		if (userDirectory.exists()) {
 			for (final File file : userDirectory.listFiles()) {
@@ -122,10 +121,10 @@ public class AccountManager {
 	}
 
 	private void saveAccount(final Account account) {
-		final File userDirectory = new File(Cache.USERS_PATH + File.separator
+		final File userDirectory = new File(Cache.USER_FOLDER.getAbsoluteFile() + File.separator
 				+ Variables.getCurrentUser().getUsername() + File.separator + "accounts");
 		if (userDirectory.exists()) {
-			final File accountFile = new File(Cache.USERS_PATH + File.separator
+			final File accountFile = new File(Cache.USER_FOLDER.getAbsoluteFile() + File.separator
 					+ Variables.getCurrentUser().getUsername() + File.separator + "accounts"
 					+ File.separator + account.getName() + ".acsafe");
 			try (final FileOutputStream outputStream = new FileOutputStream(accountFile);

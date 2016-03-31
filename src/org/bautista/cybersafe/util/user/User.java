@@ -24,7 +24,24 @@ public class User {
 		this.recoveryQuestion = recoveryQuestion;
 	}
 
-	public boolean equals(final User user) {
+	@Override
+	public int hashCode() {
+		final int prime = 13;
+		int result = 0;
+		result = result * prime + username.hashCode();
+		result = result * prime + password.hashCode();
+		result = result * prime + encryptionKey.hashCode();
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object == this) {
+			return true;
+		} else if (!(object instanceof User)) {
+			return false;
+		}
+		final User user = (User) object;
 		return user.getUsername().equalsIgnoreCase(username)
 				&& user.getEncryptionKey().equalsIgnoreCase(encryptionKey)
 				&& user.getPassword().equalsIgnoreCase(password);

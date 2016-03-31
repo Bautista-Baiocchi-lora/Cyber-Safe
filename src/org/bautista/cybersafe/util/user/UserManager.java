@@ -32,7 +32,7 @@ public class UserManager {
 
 	private void createUserDirectory(final User user) {
 		final File directory = new File(
-				Cache.USERS_PATH + File.separator + user.getUsername() + File.separator
+				Cache.USER_FOLDER.getAbsolutePath() + File.separator + user.getUsername() + File.separator
 						+ "accounts");
 		if (!directory.exists()) {
 			directory.mkdirs();
@@ -63,7 +63,7 @@ public class UserManager {
 
 	private ArrayList<User> loadUsers() {
 		final ArrayList<User> list = new ArrayList<User>();
-		final File userDirectory = new File(Cache.USERS_PATH);
+		final File userDirectory = Cache.USER_FOLDER;
 		if (userDirectory.exists() && userDirectory.isDirectory()) {
 			for (final File file : userDirectory.listFiles()) {
 				try (final BufferedEncryptionReader reader = new BufferedEncryptionReader(
@@ -112,7 +112,7 @@ public class UserManager {
 
 	private void saveUser(final User user) throws IOException {
 		final File userFile = new File(
-				Cache.USERS_PATH + File.separator + user.getUsername() + File.separator
+				Cache.USER_FOLDER.getAbsolutePath() + File.separator + user.getUsername() + File.separator
 						+ user.getUsername() + ".ucsafe");
 		if (!userFile.exists()) {
 			createUserDirectory(user);

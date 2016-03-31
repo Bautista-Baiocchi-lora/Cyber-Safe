@@ -4,21 +4,18 @@ import java.io.File;
 
 public class Cache {
 
-	public static final String CACHE_PATH = System.getProperty("user.home") + File.separator
-			+ "Cyber Safe";
-	public static final String USERS_PATH = System.getProperty("user.home") + File.separator
-			+ "Cyber Safe" + File.separator + "Users";
+	public static final File CACHE = new File(System.getProperty("user.home") + File.separator
+			+ "Cyber Safe");
+	public static final File USER_FOLDER = new File(System.getProperty("user.home") + File.separator
+			+ "Cyber Safe" + File.separator + "Users");
 
 	public static boolean cacheExists() {
-		final File cache = new File(CACHE_PATH);
-		return cache.exists();
+		return CACHE.exists();
 	}
 
 	public static boolean createCache() {
-		final File cache = new File(CACHE_PATH);
-		if (cache.mkdirs()) {
-			final File users = new File(USERS_PATH);
-			return users.mkdirs();
+		if (CACHE.mkdirs()) {
+			return USER_FOLDER.mkdirs();
 		}
 		return false;
 	}
