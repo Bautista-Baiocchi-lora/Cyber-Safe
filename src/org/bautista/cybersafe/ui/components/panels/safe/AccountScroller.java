@@ -22,6 +22,29 @@ public class AccountScroller extends JPanel implements ActionListener {
 		setListeners();
 	}
 
+	private void removeAllComponents() {
+		for (AccountPreview ap : accountPreviews) {
+			remove(ap);
+		}
+	}
+
+	private void refresh() {
+		revalidate();
+		repaint();
+	}
+
+	public void updatePreviews() {
+		final ArrayList<AccountPreview> newPreviews = getAccountPreviews();
+		if (accountPreviews.size() != newPreviews.size()) {
+			removeAllComponents();
+			accountPreviews = newPreviews;
+			setLayout(new GridLayout(accountPreviews.size(), 1));
+			positionComponents();
+			setListeners();
+			refresh();
+		}
+	}
+
 	@Override
 	public void actionPerformed(final ActionEvent e) {
 		final String command = e.getActionCommand();
@@ -35,7 +58,8 @@ public class AccountScroller extends JPanel implements ActionListener {
 
 	private ArrayList<AccountPreview> getAccountPreviews() {
 		final ArrayList<AccountPreview> list = new ArrayList<AccountPreview>();
-		for (final Account account : Engine.getInstance().getAccountManager().getAccounts()) {
+		for (final Account account : Engine.getInstance().getAccountManager()
+				.getFilteredAccounts()) {
 			list.add(new AccountPreview(account));
 		}
 		return list;
@@ -46,12 +70,6 @@ public class AccountScroller extends JPanel implements ActionListener {
 			add(ap, new GridLayout(nextRow, 1));
 			nextRow++;
 		}
-	}
-
-	public void refresh() {
-		accountPreviews = getAccountPreviews();
-		positionComponents();
-		setListeners();
 	}
 
 	private void setListeners() {

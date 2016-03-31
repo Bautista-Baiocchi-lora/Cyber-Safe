@@ -37,9 +37,9 @@ public class LoginScreen extends JPanel implements ActionListener {
 		constraints.weighty = 1;
 		constraints.insets = new Insets(8, 5, 3, 3);
 
-		username = new JTextField();
-		password = new JPasswordField();
-		key = new JPasswordField();
+		username = new JTextField("panda");
+		password = new JPasswordField("juan123");
+		key = new JPasswordField("1111111111111111");
 		usernameLabel = new JLabel("Username: ", SwingConstants.TRAILING);
 		keyLabel = new JLabel("Encryption Key: ", SwingConstants.TRAILING);
 		passwordLabel = new JLabel("Password: ", SwingConstants.TRAILING);

@@ -85,6 +85,10 @@ public class Engine {
 		ui.refresh();
 	}
 
+	public void updateAccountPreviews() {
+		ui.updateAccountScroller();
+	}
+
 	public void run() {
 		try {
 			SwingUtilities.invokeAndWait(() -> ui.setVisible(true));

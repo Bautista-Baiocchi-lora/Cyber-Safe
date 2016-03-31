@@ -226,6 +226,12 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 		refresh();
 	}
 
+	public void updateAccountScroller() {
+		if (accountScroller != null) {
+			accountScroller.updatePreviews();
+		}
+	}
+
 	@Override
 	public void windowActivated(final WindowEvent e) {
 		// TODO Auto-generated method stub

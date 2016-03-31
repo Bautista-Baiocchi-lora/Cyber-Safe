@@ -15,21 +15,49 @@ import org.bautista.cybersafe.core.Engine;
 import org.bautista.cybersafe.data.Variables;
 import org.bautista.cybersafe.util.Cache;
 import org.bautista.cybersafe.util.Config;
+import org.bautista.cybersafe.util.account.util.AccountType;
 import org.bautista.cybersafe.util.enctryption.util.EncryptedObjectInputStream;
 import org.bautista.cybersafe.util.enctryption.util.EncryptedObjectOutputStream;
 import org.bautista.cybersafe.util.user.User;
 
 public class AccountManager {
 	private final ArrayList<Account> accounts;
+	private ArrayList<Account> filteredAccounts;
 	private final User user;
 
 	public AccountManager(final User user) {
 		this.user = user;
 		accounts = loadAccounts(user);
+		filteredAccounts = accounts;
+	}
+
+	public void filterAccountsByName(String name) {
+		final ArrayList<Account> list = new ArrayList<Account>();
+		for (Account account : accounts) {
+			if (account.getName().contains(name)) {
+				list.add(account);
+			}
+		}
+		filteredAccounts = list;
+	}
+
+	public void filterAccountsByType(String type) {
+		final ArrayList<Account> list = new ArrayList<Account>();
+		for (Account account : accounts) {
+			if (account.getType().getName().equalsIgnoreCase(type)) {
+				list.add(account);
+			}
+		}
+		filteredAccounts = list;
+	}
+
+	public ArrayList<Account> getFilteredAccounts() {
+		return filteredAccounts;
 	}
 
 	public void createAccount(final Account account) {
 		accounts.add(account);
+		filteredAccounts = accounts;
 		saveAccount(account);
 	}
 
