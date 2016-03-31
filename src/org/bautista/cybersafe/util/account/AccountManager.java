@@ -31,20 +31,11 @@ public class AccountManager {
 		filteredAccounts = accounts;
 	}
 
-	public void filterAccountsByName(String name) {
+	public void filterAccounts(String name, String type) {
 		final ArrayList<Account> list = new ArrayList<Account>();
 		for (Account account : accounts) {
-			if (account.getName().contains(name)) {
-				list.add(account);
-			}
-		}
-		filteredAccounts = list;
-	}
-
-	public void filterAccountsByType(String type) {
-		final ArrayList<Account> list = new ArrayList<Account>();
-		for (Account account : accounts) {
-			if (account.getType().getName().equalsIgnoreCase(type)) {
+			if (account.getType().getName().equalsIgnoreCase(type)
+					&& account.getName().contains(name)) {
 				list.add(account);
 			}
 		}

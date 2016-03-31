@@ -29,13 +29,15 @@ public class AccountFilterScreen extends JPanel implements ActionListener {
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				Engine.getInstance().getAccountManager().filterAccountsByName(nameFilter.getText());
+				Engine.getInstance().getAccountManager().filterAccounts(nameFilter.getText(),
+						typeFilter.getSelectedItem().toString());
 				Engine.getInstance().updateAccountPreviews();
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				Engine.getInstance().getAccountManager().filterAccountsByName(nameFilter.getText());
+				Engine.getInstance().getAccountManager().filterAccounts(nameFilter.getText(),
+						typeFilter.getSelectedItem().toString());
 				Engine.getInstance().updateAccountPreviews();
 			}
 
@@ -68,8 +70,8 @@ public class AccountFilterScreen extends JPanel implements ActionListener {
 
 	@Override
 	public void actionPerformed(final ActionEvent e) {
-		Engine.getInstance().getAccountManager()
-				.filterAccountsByType(typeFilter.getSelectedItem().toString());
+		Engine.getInstance().getAccountManager().filterAccounts(nameFilter.getText(),
+				typeFilter.getSelectedItem().toString());
 		Engine.getInstance().updateAccountPreviews();
 	}
 
