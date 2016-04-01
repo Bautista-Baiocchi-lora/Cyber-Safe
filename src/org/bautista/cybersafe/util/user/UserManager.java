@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bautista.cybersafe.core.Engine;
-import org.bautista.cybersafe.data.Variables;
 import org.bautista.cybersafe.util.Cache;
 import org.bautista.cybersafe.util.Config;
 import org.bautista.cybersafe.util.enctryption.util.BufferedEncryptionReader;
@@ -32,7 +31,8 @@ public class UserManager {
 
 	private void createUserDirectory(final User user) {
 		final File directory = new File(
-				Cache.USER_FOLDER.getAbsolutePath() + File.separator + user.getUsername() + File.separator
+				Cache.USER_FOLDER.getAbsolutePath() + File.separator + user.getUsername()
+						+ File.separator
 						+ "accounts");
 		if (!directory.exists()) {
 			directory.mkdirs();
@@ -97,7 +97,7 @@ public class UserManager {
 	public boolean logIn(final User user) {
 		for (final User u : users) {
 			if (u.equals(user)) {
-				Variables.setCurrentUser(u);
+				Engine.getInstance().setCurrentUser(u);
 				Engine.getInstance().openSafeScreen();
 				return true;
 			}
@@ -105,14 +105,10 @@ public class UserManager {
 		return false;
 	}
 
-	public void logOut(final User user) {
-		Variables.setCurrentUser(null);
-		Engine.getInstance().openLoginScreen();
-	}
-
 	private void saveUser(final User user) throws IOException {
 		final File userFile = new File(
-				Cache.USER_FOLDER.getAbsolutePath() + File.separator + user.getUsername() + File.separator
+				Cache.USER_FOLDER.getAbsolutePath() + File.separator + user.getUsername()
+						+ File.separator
 						+ user.getUsername() + ".ucsafe");
 		if (!userFile.exists()) {
 			createUserDirectory(user);

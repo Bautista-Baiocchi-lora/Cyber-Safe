@@ -25,11 +25,7 @@ import org.bautista.cybersafe.util.account.util.AccountType;
 
 public class CreateAccountScreen extends JPanel implements ActionListener {
 	private static CreateAccountScreen instance;
-
-	public static CreateAccountScreen getInstance() {
-		return instance == null ? instance = new CreateAccountScreen() : instance;
-	}
-
+	private final char[] INVALID_CHARACTERS = { '"', '*', '/', ':', '<', '>', '?', '|', '\\' };
 	private final GridBagConstraints constraints;
 	private final JTextField titleTextField;
 	private final JTextArea descriptionTextArea;
@@ -42,8 +38,8 @@ public class CreateAccountScreen extends JPanel implements ActionListener {
 	private int nextRow = 0;
 
 	public CreateAccountScreen() {
-		setLayout(new GridBagLayout());
 		instance = this;
+		setLayout(new GridBagLayout());
 		constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.anchor = GridBagConstraints.CENTER;
@@ -73,6 +69,21 @@ public class CreateAccountScreen extends JPanel implements ActionListener {
 		setListeners();
 	}
 
+	public static CreateAccountScreen getInstance() {
+		return instance == null ? instance = new CreateAccountScreen() : instance;
+	}
+
+	private boolean containsInvalidCharacters(final String username) {
+		for (final char c : username.toCharArray()) {
+			for (final char element : INVALID_CHARACTERS) {
+				if (c == element) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	@Override
 	public void actionPerformed(final ActionEvent e) {
 		final String command = e.getActionCommand();
@@ -92,7 +103,7 @@ public class CreateAccountScreen extends JPanel implements ActionListener {
 					new AccountField(field.getFieldTitle(), field.getFieldData(),
 							field.getFieldType()));
 		}
-		if (!title.getFieldData().isEmpty()) {
+		if (!title.getFieldData().isEmpty() && !containsInvalidCharacters(title.getFieldData())) {
 			if (Engine.getInstance().getAccountManager()
 					.isNameAvaliable(title.getFieldData())) {
 				final Account account = new Account(title.getFieldData(),

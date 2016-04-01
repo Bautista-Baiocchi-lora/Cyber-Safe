@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import javax.crypto.NoSuchPaddingException;
 
 import org.bautista.cybersafe.core.Engine;
-import org.bautista.cybersafe.data.Variables;
 import org.bautista.cybersafe.util.Cache;
 import org.bautista.cybersafe.util.Config;
 import org.bautista.cybersafe.util.enctryption.util.EncryptedObjectInputStream;
@@ -76,7 +75,7 @@ public class AccountManager {
 
 	private void deleteAccountFile(final Account account) {
 		final File accountFile = new File(Cache.USER_FOLDER.getAbsoluteFile() + File.separator
-				+ Variables.getCurrentUser().getUsername() + File.separator + "accounts"
+				+ Engine.getInstance().getCurrentUser().getUsername() + File.separator + "accounts"
 				+ File.separator + account.getName() + ".acsafe");
 		if (accountFile.exists()) {
 			accountFile.delete();
@@ -99,13 +98,15 @@ public class AccountManager {
 	private ArrayList<Account> loadAccounts(final User user) {
 		final ArrayList<Account> list = new ArrayList<Account>();
 		final File userDirectory = new File(Cache.USER_FOLDER.getAbsoluteFile() + File.separator
-				+ Variables.getCurrentUser().getUsername() + File.separator + "accounts");
+				+ Engine.getInstance().getCurrentUser().getUsername() + File.separator
+				+ "accounts");
 		if (userDirectory.exists()) {
 			for (final File file : userDirectory.listFiles()) {
 				try (final FileInputStream inputStream = new FileInputStream(
 						file.getAbsolutePath());
 						final EncryptedObjectInputStream encryptedStream = new EncryptedObjectInputStream(
-								inputStream, Variables.getCurrentUser().getEncryptionKey(),
+								inputStream,
+								Engine.getInstance().getCurrentUser().getEncryptionKey(),
 								Engine.getInstance().getConfig()
 										.getPropertyValue(Config.INIT_VECTOR));) {
 					final Account account = (Account) encryptedStream.readEncryptedObject();
@@ -122,14 +123,16 @@ public class AccountManager {
 
 	private void saveAccount(final Account account) {
 		final File userDirectory = new File(Cache.USER_FOLDER.getAbsoluteFile() + File.separator
-				+ Variables.getCurrentUser().getUsername() + File.separator + "accounts");
+				+ Engine.getInstance().getCurrentUser().getUsername() + File.separator
+				+ "accounts");
 		if (userDirectory.exists()) {
 			final File accountFile = new File(Cache.USER_FOLDER.getAbsoluteFile() + File.separator
-					+ Variables.getCurrentUser().getUsername() + File.separator + "accounts"
+					+ Engine.getInstance().getCurrentUser().getUsername() + File.separator
+					+ "accounts"
 					+ File.separator + account.getName() + ".acsafe");
 			try (final FileOutputStream outputStream = new FileOutputStream(accountFile);
 					final EncryptedObjectOutputStream encryptedStream = new EncryptedObjectOutputStream(
-							outputStream, Variables.getCurrentUser().getEncryptionKey(),
+							outputStream, Engine.getInstance().getCurrentUser().getEncryptionKey(),
 							Engine.getInstance().getConfig()
 									.getPropertyValue(Config.INIT_VECTOR));) {
 				encryptedStream.writeEncryptedObject(account);

@@ -2,30 +2,24 @@ package org.bautista.cybersafe.core;
 
 import javax.swing.SwingUtilities;
 
-import org.bautista.cybersafe.data.Variables;
 import org.bautista.cybersafe.ui.MainUI;
 import org.bautista.cybersafe.util.Cache;
 import org.bautista.cybersafe.util.Config;
 import org.bautista.cybersafe.util.account.Account;
 import org.bautista.cybersafe.util.account.AccountManager;
+import org.bautista.cybersafe.util.user.User;
 import org.bautista.cybersafe.util.user.UserManager;
 
 public class Engine {
-
 	private static Engine instance;
-
-	public static Engine getInstance() {
-		return instance == null ? instance = new Engine() : instance;
-	}
-
 	private AccountManager accountManager;
 	private final MainUI ui;
 	private final UserManager userManager;
-
 	private final Config config;
+	private User currentUser;
 
 	private Engine() {
-		instance = this;
+		//instance = this;
 		if (!Cache.cacheExists()) {
 			if (!Cache.createCache()) {
 				System.out.println("Error creating cache.");
@@ -34,6 +28,18 @@ public class Engine {
 		config = new Config();
 		userManager = new UserManager();
 		ui = new MainUI();
+	}
+
+	public static Engine getInstance() {
+		return instance == null ? instance = new Engine() : instance;
+	}
+
+	public void setCurrentUser(User user) {
+		currentUser = user;
+	}
+
+	public User getCurrentUser() {
+		return currentUser;
 	}
 
 	public AccountManager getAccountManager() {
@@ -49,14 +55,14 @@ public class Engine {
 	}
 
 	public void logOut() {
-		userManager.logOut(Variables.getCurrentUser());
+		currentUser = null;
 		accountManager = null;
 		ui.showLogin();
 	}
 
 	public void openAccountViewer(final Account account) {
 		ui.showAccount(account);
-		ui.setTitle("Cyber Safe - [" + Variables.getCurrentUser().getUsername() + "] -"
+		ui.setTitle("Cyber Safe - [" + currentUser.getUsername() + "] -"
 				+ account.getName());
 	}
 
@@ -75,10 +81,10 @@ public class Engine {
 
 	public void openSafeScreen() {
 		if (accountManager == null) {
-			accountManager = new AccountManager(Variables.getCurrentUser());
+			accountManager = new AccountManager(currentUser);
 		}
 		ui.showSafe();
-		ui.setTitle("Cyber Safe - [" + Variables.getCurrentUser().getUsername() + "]");
+		ui.setTitle("Cyber Safe - [" + currentUser.getUsername() + "]");
 	}
 
 	public void refreshUI() {

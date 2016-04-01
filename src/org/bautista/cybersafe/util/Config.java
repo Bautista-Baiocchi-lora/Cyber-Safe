@@ -71,12 +71,10 @@ public class Config {
 	}
 
 	public void setProperty(final String key, final String value) throws IOException {
-		if (configExists()) {
-			final OutputStream output = new FileOutputStream(CONFIG_FILE);
-			properties.setProperty(key, value);
-			properties.store(output, null);
-			output.close();
-		}
+		final OutputStream output = new FileOutputStream(CONFIG_FILE);
+		properties.setProperty(key, value);
+		properties.store(output, null);
+		output.close();
 	}
 
 }

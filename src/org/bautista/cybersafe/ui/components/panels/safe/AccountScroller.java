@@ -16,7 +16,7 @@ public class AccountScroller extends JPanel implements ActionListener {
 	private int nextRow = 1;
 
 	public AccountScroller() {
-		accountPreviews = getAccountPreviews();
+		loadAccountPreviews();
 		setLayout(new GridLayout(accountPreviews.size(), 1));
 		positionComponents();
 		setListeners();
@@ -26,6 +26,7 @@ public class AccountScroller extends JPanel implements ActionListener {
 		for (AccountPreview ap : accountPreviews) {
 			remove(ap);
 		}
+		nextRow = 1;
 	}
 
 	private void refresh() {
@@ -34,15 +35,12 @@ public class AccountScroller extends JPanel implements ActionListener {
 	}
 
 	public void updatePreviews() {
-		final ArrayList<AccountPreview> newPreviews = getAccountPreviews();
-		if (accountPreviews.size() != newPreviews.size()) {
-			removeAllComponents();
-			accountPreviews = newPreviews;
-			setLayout(new GridLayout(accountPreviews.size(), 1));
-			positionComponents();
-			setListeners();
-			refresh();
-		}
+		removeAllComponents();
+		loadAccountPreviews();
+		setLayout(new GridLayout(accountPreviews.size(), 1));
+		positionComponents();
+		setListeners();
+		refresh();
 	}
 
 	@Override
@@ -56,13 +54,14 @@ public class AccountScroller extends JPanel implements ActionListener {
 		}
 	}
 
-	private ArrayList<AccountPreview> getAccountPreviews() {
-		final ArrayList<AccountPreview> list = new ArrayList<AccountPreview>();
+	private void loadAccountPreviews() {
+		if (accountPreviews == null) {
+			accountPreviews = new ArrayList<AccountPreview>();
+		}
 		for (final Account account : Engine.getInstance().getAccountManager()
 				.getFilteredAccounts()) {
-			list.add(new AccountPreview(account));
+			accountPreviews.add(new AccountPreview(account));
 		}
-		return list;
 	}
 
 	private void positionComponents() {

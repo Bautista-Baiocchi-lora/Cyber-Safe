@@ -21,7 +21,6 @@ import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
 import org.bautista.cybersafe.core.Engine;
-import org.bautista.cybersafe.data.Variables;
 import org.bautista.cybersafe.ui.components.panels.CreateUser;
 import org.bautista.cybersafe.ui.components.panels.LoginScreen;
 import org.bautista.cybersafe.ui.components.panels.safe.AccountFilterScreen;
@@ -73,21 +72,22 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 				Engine.getInstance().openCreateAccountScreen();
 				break;
 			case "user info":
-				if (Variables.getCurrentUser() != null) {
+				if (Engine.getInstance().getCurrentUser() != null) {
 					JOptionPane.showMessageDialog(null,
-							"Username: " + Variables.getCurrentUser().getUsername() + "\nPassword: "
-									+ Variables.getCurrentUser().getPassword()
+							"Username: " + Engine.getInstance().getCurrentUser().getUsername()
+									+ "\nPassword: "
+									+ Engine.getInstance().getCurrentUser().getPassword()
 									+ "\nRecovery Question: "
-									+ Variables.getCurrentUser().getRecoveryQuestion()
+									+ Engine.getInstance().getCurrentUser().getRecoveryQuestion()
 									+ "\nRecovery Question Answer: "
-									+ Variables.getCurrentUser().getRecoveryAnswer()
+									+ Engine.getInstance().getCurrentUser().getRecoveryAnswer()
 									+ "\nEncryption Key: "
-									+ Variables.getCurrentUser().getEncryptionKey(),
+									+ Engine.getInstance().getCurrentUser().getEncryptionKey(),
 							"Information", JOptionPane.OK_OPTION);
 				}
 				break;
 			case "log out":
-				if (Variables.getCurrentUser() != null) {
+				if (Engine.getInstance().getCurrentUser() != null) {
 					final int reply = JOptionPane.showConfirmDialog(this,
 							"Are you sure you want to log out?", "Warning!",
 							JOptionPane.YES_NO_OPTION);
