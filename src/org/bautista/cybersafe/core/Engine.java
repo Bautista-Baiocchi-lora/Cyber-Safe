@@ -13,21 +13,18 @@ import org.bautista.cybersafe.util.user.UserManager;
 public class Engine {
 	private static Engine instance;
 	private AccountManager accountManager;
-	private final MainUI ui;
-	private final UserManager userManager;
+	private MainUI ui;
+	private UserManager userManager;
 	private final Config config;
 	private User currentUser;
 
 	private Engine() {
-		//instance = this;
 		if (!Cache.cacheExists()) {
 			if (!Cache.createCache()) {
 				System.out.println("Error creating cache.");
 			}
 		}
 		config = new Config();
-		userManager = new UserManager();
-		ui = new MainUI();
 	}
 
 	public static Engine getInstance() {
@@ -96,6 +93,8 @@ public class Engine {
 	}
 
 	public void run() {
+		userManager = new UserManager();
+		ui = new MainUI();
 		try {
 			SwingUtilities.invokeAndWait(() -> ui.setVisible(true));
 		} catch (final Exception e) {
