@@ -3,6 +3,8 @@ package org.bautista.cybersafe.core;
 import javax.swing.SwingUtilities;
 
 import org.bautista.cybersafe.ui.MainUI;
+import org.bautista.cybersafe.ui.components.logger.LogType;
+import org.bautista.cybersafe.ui.components.logger.Logger;
 import org.bautista.cybersafe.util.Cache;
 import org.bautista.cybersafe.util.Config;
 import org.bautista.cybersafe.util.account.Account;
@@ -19,10 +21,13 @@ public class Engine {
 	private User currentUser;
 
 	private Engine() {
+		ui = new MainUI();
 		if (!Cache.cacheExists()) {
+			Logger.writeException("Cache not detected.", LogType.CLIENT);
 			if (!Cache.createCache()) {
-				System.out.println("Error creating cache.");
+				Logger.writeException("Error creating cache.", LogType.CLIENT);
 			}
+			Logger.write("Cache created.", LogType.CLIENT);
 		}
 		config = new Config();
 	}
@@ -67,6 +72,10 @@ public class Engine {
 		ui.showCreateAccount();
 	}
 
+	public void openAccountEditor(final Account account) {
+		ui.showAccountEditor(account);
+	}
+
 	public void openCreateUserScreen() {
 		ui.showCreateUser();
 	}
@@ -78,7 +87,7 @@ public class Engine {
 
 	public void openSafeScreen() {
 		if (accountManager == null) {
-			accountManager = new AccountManager(currentUser);
+			accountManager = new AccountManager();
 		}
 		ui.showSafe();
 		ui.setTitle("Cyber Safe - [" + currentUser.getUsername() + "]");
@@ -94,7 +103,6 @@ public class Engine {
 
 	public void run() {
 		userManager = new UserManager();
-		ui = new MainUI();
 		try {
 			SwingUtilities.invokeAndWait(() -> ui.setVisible(true));
 		} catch (final Exception e) {

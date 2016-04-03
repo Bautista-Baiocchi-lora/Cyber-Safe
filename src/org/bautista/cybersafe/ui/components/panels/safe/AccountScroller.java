@@ -5,13 +5,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.JPanel;
-
 import org.bautista.cybersafe.core.Engine;
 import org.bautista.cybersafe.ui.components.AccountPreview;
+import org.bautista.cybersafe.ui.util.Panel;
 import org.bautista.cybersafe.util.account.Account;
 
-public class AccountScroller extends JPanel implements ActionListener {
+public class AccountScroller extends Panel implements ActionListener {
 	private ArrayList<AccountPreview> accountPreviews;
 	private int nextRow = 1;
 
@@ -26,12 +25,8 @@ public class AccountScroller extends JPanel implements ActionListener {
 		for (AccountPreview ap : accountPreviews) {
 			remove(ap);
 		}
+		accountPreviews.clear();
 		nextRow = 1;
-	}
-
-	private void refresh() {
-		revalidate();
-		repaint();
 	}
 
 	public void updatePreviews() {

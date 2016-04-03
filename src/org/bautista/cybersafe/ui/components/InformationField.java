@@ -16,7 +16,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
-import org.bautista.cybersafe.ui.components.panels.safe.CreateAccountScreen;
+import org.bautista.cybersafe.ui.components.panels.safe.AccountCreatorScreen;
+import org.bautista.cybersafe.ui.components.panels.safe.AccountEditorScreen;
 import org.bautista.cybersafe.ui.util.Scroller;
 import org.bautista.cybersafe.util.account.util.FieldType;
 
@@ -28,6 +29,7 @@ public class InformationField extends JComponent implements ActionListener {
 	private final Border BORDER = BorderFactory
 			.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Information Field");
 
+	// blank field
 	public InformationField(final JComponent field) {
 		setLayout(new GridLayout(5, 1, 10, 5));
 		setBorder(BORDER);
@@ -43,6 +45,7 @@ public class InformationField extends JComponent implements ActionListener {
 		positionComponents();
 	}
 
+	// none deletable fields
 	public InformationField(final String name, final JComponent field) {
 		this(field);
 		title.setText(name);
@@ -52,7 +55,11 @@ public class InformationField extends JComponent implements ActionListener {
 
 	@Override
 	public void actionPerformed(final ActionEvent e) {
-		CreateAccountScreen.getInstance().removeComponent(this);
+		if (getParent() instanceof AccountCreatorScreen) {
+			AccountCreatorScreen.getInstance().removeComponent(this);
+		} else {
+			AccountEditorScreen.getInstance().removeComponent(this);
+		}
 	}
 
 	public String getFieldData() {

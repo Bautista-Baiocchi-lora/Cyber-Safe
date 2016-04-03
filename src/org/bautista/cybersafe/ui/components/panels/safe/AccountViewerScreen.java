@@ -9,16 +9,16 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.bautista.cybersafe.core.Engine;
+import org.bautista.cybersafe.ui.components.InformationField;
+import org.bautista.cybersafe.ui.util.Panel;
 import org.bautista.cybersafe.ui.util.Scroller;
 import org.bautista.cybersafe.util.account.Account;
-import org.bautista.cybersafe.util.account.util.AccountField;
 
-public class AccountViewerScreen extends JPanel implements ActionListener {
+public class AccountViewerScreen extends Panel implements ActionListener {
 	private final JButton back, edit;
 	private final Account account;
 	private final Font TITLE_FONT = new Font("Dialog", Font.BOLD, 16);
@@ -39,7 +39,7 @@ public class AccountViewerScreen extends JPanel implements ActionListener {
 	public void actionPerformed(final ActionEvent e) {
 		final String command = e.getActionCommand();
 		if (command.equalsIgnoreCase("edit")) {
-
+			Engine.getInstance().openAccountEditor(account);
 		} else {
 			Engine.getInstance().openSafeScreen();
 		}
@@ -51,28 +51,28 @@ public class AccountViewerScreen extends JPanel implements ActionListener {
 	}
 
 	private void positionComponents() {
-		for (final AccountField field : account.getFields()) {
-			final JLabel title = new JLabel(field.getTitle());
+		addComponent(edit);
+		addComponent(back);
+		for (final InformationField field : account.getFields()) {
+			final JLabel title = new JLabel(field.getFieldTitle());
 			title.setFont(TITLE_FONT);
 			addComponent(title);
-			if (field.getType().getType().equalsIgnoreCase("TextArea")) {
-				final JTextArea dataArea = new JTextArea(field.getData());
+			if (field.getFieldType().getType().equalsIgnoreCase("TextArea")) {
+				final JTextArea dataArea = new JTextArea(field.getFieldData());
 				dataArea.setLineWrap(true);
 				dataArea.setWrapStyleWord(true);
 				dataArea.setOpaque(true);
 				dataArea.setEditable(false);
 				dataArea.setFocusable(false);
-				addComponent(new Scroller(dataArea, new Dimension(280, 20)));
+				addComponent(new Scroller(dataArea, new Dimension(280, 40)));
 			} else {
-				final JTextField dataField = new JTextField(field.getData());
+				final JTextField dataField = new JTextField(field.getFieldData());
 				dataField.setEditable(false);
 				dataField.setOpaque(true);
 				dataField.setFocusable(false);
 				addComponent(dataField);
 			}
 		}
-		addComponent(edit);
-		addComponent(back);
 	}
 
 	private void setListeners() {

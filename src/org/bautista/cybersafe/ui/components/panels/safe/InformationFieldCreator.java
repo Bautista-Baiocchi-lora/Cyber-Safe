@@ -10,17 +10,16 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
-import org.bautista.cybersafe.core.Engine;
 import org.bautista.cybersafe.ui.components.InformationField;
+import org.bautista.cybersafe.ui.util.Panel;
 import org.bautista.cybersafe.ui.util.Scroller;
 
-public class InformationFieldCreator extends JPanel implements ActionListener {
+public class InformationFieldCreator extends Panel implements ActionListener {
 	private final JComboBox fieldType;
 	private final JLabel fieldTypeLabel;
 	private final JButton add;
@@ -53,21 +52,29 @@ public class InformationFieldCreator extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(final ActionEvent e) {
 		e.getActionCommand().toLowerCase();
+		boolean creator = getParent() instanceof AccountCreatorScreen;
 		switch (fieldType.getSelectedItem().toString().toLowerCase()) {
 			case "normal text field":
-				CreateAccountScreen.getInstance().addComponent(
-						new InformationField(textField));
+				if (creator) {
+					AccountCreatorScreen.getInstance().addComponent(
+							new InformationField(textField));
+				} else {
+					AccountEditorScreen.getInstance().addComponent(
+							new InformationField(textField));
+				}
 				break;
 			case "large text field":
-				CreateAccountScreen.getInstance()
-						.addComponent(new InformationField(
-								new Scroller(textArea, new Dimension(367, 20))));
+				if (creator) {
+					AccountCreatorScreen.getInstance()
+							.addComponent(new InformationField(
+									new Scroller(textArea, new Dimension(367, 30))));
+				} else {
+					AccountEditorScreen.getInstance().addComponent(new InformationField(
+							new Scroller(textArea, new Dimension(367, 30))));
+				}
 				break;
 		}
-		revalidate();
-		repaint();
-		updateUI();
-		Engine.getInstance().refreshUI();
+		refresh();
 	}
 
 	private void positionComponents() {

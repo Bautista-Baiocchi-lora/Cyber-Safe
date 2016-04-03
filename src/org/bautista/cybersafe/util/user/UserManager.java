@@ -5,9 +5,14 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
+import javax.swing.JOptionPane;
+
 import org.bautista.cybersafe.core.Engine;
+import org.bautista.cybersafe.ui.components.logger.LogType;
+import org.bautista.cybersafe.ui.components.logger.Logger;
 import org.bautista.cybersafe.util.Cache;
 import org.bautista.cybersafe.util.Config;
 import org.bautista.cybersafe.util.enctryption.util.BufferedEncryptionReader;
@@ -15,18 +20,29 @@ import org.bautista.cybersafe.util.enctryption.util.BufferedEncryptionWriter;
 
 public class UserManager {
 	private final ArrayList<User> users;
+	private final char[] INVALID_CHARACTERS = { '"', '*', '/', ':', '<', '>', '?', '|', '\\' };
 
 	public UserManager() {
 		users = loadUsers();
+		Logger.write("Users loaded.", LogType.CLIENT);
 	}
 
-	public void createUser(final User user) {
-		users.add(user);
-		try {
-			saveUser(user);
-		} catch (final IOException e) {
-			e.printStackTrace();
+	public boolean createUser(final User user) {
+		if (keyIsValid(user.getEncryptionKey()) && passwordIsValid(user.getPassword())
+				&& usernameIsValid(user.getUsername())
+				&& recoveryAnswerIsValid(user.getRecoveryAnswer())
+				&& recoveryQuestionIsValid(user.getRecoveryQuestion())) {
+			try {
+				saveUser(user);
+				users.add(user);
+				Logger.write("Created user: " + user.getUsername(), LogType.CLIENT);
+			} catch (final IOException e) {
+				e.printStackTrace();
+				Logger.writeException("Error creating user.", LogType.CLIENT);
+			}
+			return true;
 		}
+		return false;
 	}
 
 	private void createUserDirectory(final User user) {
@@ -88,6 +104,7 @@ public class UserManager {
 					}
 				} catch (final IOException e) {
 					e.printStackTrace();
+					Logger.writeException("Error loading users.", LogType.CLIENT);
 				}
 			}
 		}
@@ -123,6 +140,83 @@ public class UserManager {
 			writer.newLine();
 		}
 		writer.close();
+	}
+
+	private boolean recoveryAnswerIsValid(String answer) {
+		if (answer.length() >= 1) {
+			return true;
+		}
+		JOptionPane.showMessageDialog(null,
+				"You left your recovery answer blank! Make sure to make a password you will remember the answer to. It is the only way to recover your password.",
+				"Warning!", JOptionPane.OK_OPTION);
+		return false;
+	}
+
+	private boolean recoveryQuestionIsValid(String question) {
+		if (question.length() >= 1) {
+			return true;
+		}
+		JOptionPane.showMessageDialog(null,
+				"You left your recovery question blank! Make sure to make a question you will remember the answer to. It is the only way to recover your password.",
+				"Warning!", JOptionPane.OK_OPTION);
+		return false;
+	}
+
+	private boolean usernameIsValid(String username) {
+		boolean tooShort = true;
+		boolean invalidChar = true;
+		if (username.length() >= 4) {
+			tooShort = false;
+			if (!containsInvalidCharacters(username)) {
+				invalidChar = false;
+				if (isNameAvaliable(username)) {
+					return true;
+				}
+				JOptionPane.showMessageDialog(null, "That username is already taken.", "Warning!",
+						JOptionPane.OK_OPTION);
+			}
+		}
+		if (tooShort) {
+			JOptionPane.showMessageDialog(null,
+					"Your username must be at least 4 characters long.", "Warning!",
+					JOptionPane.OK_OPTION);
+		} else if (invalidChar) {
+			JOptionPane.showMessageDialog(null,
+					"Your username contains invalid characters. Please refrain from using the following characters in your username: ' \" ', ' \\ ', ' / ', ' * ', ' | ', ' ? ', ' : ', ' < ', ' > '",
+					"Warning!", JOptionPane.OK_OPTION);
+		}
+		return false;
+	}
+
+	private boolean containsInvalidCharacters(final String username) {
+		for (final char c : username.toCharArray()) {
+			for (final char element : INVALID_CHARACTERS) {
+				if (c == element) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean keyIsValid(String key) {
+		if (key.length() == 16) {
+			return true;
+		}
+		JOptionPane.showMessageDialog(null,
+				"Your Encryption Key is too short. Make sure it is exactly 16 characters long. Remember, you can always have one automatically generated for you.",
+				"Warning!", JOptionPane.OK_OPTION);
+		return false;
+	}
+
+	private boolean passwordIsValid(String password) {
+		if (password.length() > 6) {
+			return true;
+		}
+		JOptionPane.showMessageDialog(null,
+				"Your password is too short. Make sure it is at least 6 characters long.",
+				"Warning!", JOptionPane.OK_OPTION);
+		return false;
 	}
 
 }

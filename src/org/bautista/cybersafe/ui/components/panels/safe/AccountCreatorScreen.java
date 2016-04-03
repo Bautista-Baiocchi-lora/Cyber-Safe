@@ -12,20 +12,18 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.bautista.cybersafe.core.Engine;
 import org.bautista.cybersafe.ui.components.InformationField;
+import org.bautista.cybersafe.ui.util.Panel;
 import org.bautista.cybersafe.ui.util.Scroller;
 import org.bautista.cybersafe.util.account.Account;
-import org.bautista.cybersafe.util.account.util.AccountField;
 import org.bautista.cybersafe.util.account.util.AccountType;
 
-public class CreateAccountScreen extends JPanel implements ActionListener {
-	private static CreateAccountScreen instance;
-	private final char[] INVALID_CHARACTERS = { '"', '*', '/', ':', '<', '>', '?', '|', '\\' };
+public class AccountCreatorScreen extends Panel implements ActionListener {
+	private static AccountCreatorScreen instance;
 	private final GridBagConstraints constraints;
 	private final JTextField titleTextField;
 	private final JTextArea descriptionTextArea;
@@ -37,7 +35,7 @@ public class CreateAccountScreen extends JPanel implements ActionListener {
 
 	private int nextRow = 0;
 
-	public CreateAccountScreen() {
+	public AccountCreatorScreen() {
 		instance = this;
 		setLayout(new GridBagLayout());
 		constraints = new GridBagConstraints();
@@ -54,7 +52,7 @@ public class CreateAccountScreen extends JPanel implements ActionListener {
 		descriptionTextArea.setLineWrap(true);
 		descriptionTextArea.setWrapStyleWord(true);
 		description = new InformationField("Account Description",
-				new Scroller(descriptionTextArea, new Dimension(367, 25)));
+				new Scroller(descriptionTextArea, new Dimension(367, 40)));
 
 		fields = new ArrayList<InformationField>();
 		fields.add(title);
@@ -69,19 +67,8 @@ public class CreateAccountScreen extends JPanel implements ActionListener {
 		setListeners();
 	}
 
-	public static CreateAccountScreen getInstance() {
-		return instance == null ? instance = new CreateAccountScreen() : instance;
-	}
-
-	private boolean containsInvalidCharacters(final String username) {
-		for (final char c : username.toCharArray()) {
-			for (final char element : INVALID_CHARACTERS) {
-				if (c == element) {
-					return true;
-				}
-			}
-		}
-		return false;
+	public static AccountCreatorScreen getInstance() {
+		return instance == null ? instance = new AccountCreatorScreen() : instance;
 	}
 
 	@Override
@@ -97,24 +84,12 @@ public class CreateAccountScreen extends JPanel implements ActionListener {
 				return;
 			}
 		}
-		final ArrayList<AccountField> fields = new ArrayList<AccountField>();
-		for (final InformationField field : this.fields) {
-			fields.add(
-					new AccountField(field.getFieldTitle(), field.getFieldData(),
-							field.getFieldType()));
-		}
-		if (!title.getFieldData().isEmpty() && !containsInvalidCharacters(title.getFieldData())) {
-			if (Engine.getInstance().getAccountManager()
-					.isNameAvaliable(title.getFieldData())) {
-				final Account account = new Account(title.getFieldData(),
-						description.getFieldData(),
-						AccountType.getTypeByName(type.getFieldData()), fields);
-				Engine.getInstance().getAccountManager().createAccount(account);
+		if (!title.getFieldData().isEmpty()) {
+			final Account account = new Account(title.getFieldData(),
+					description.getFieldData(),
+					AccountType.getTypeByName(type.getFieldData()), this.fields);
+			if (Engine.getInstance().getAccountManager().createAccount(account)) {
 				Engine.getInstance().openSafeScreen();
-			} else {
-				JOptionPane.showMessageDialog(this,
-						"This account name is already taken.",
-						"Warning!", JOptionPane.OK_OPTION);
 			}
 		} else {
 			JOptionPane.showMessageDialog(this,
@@ -156,7 +131,7 @@ public class CreateAccountScreen extends JPanel implements ActionListener {
 		if (fields.contains(component)) {
 			fields.remove(component);
 		}
-		Engine.getInstance().refreshUI();
+		refresh();
 	}
 
 	private void setListeners() {

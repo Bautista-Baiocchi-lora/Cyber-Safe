@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
+import org.bautista.cybersafe.ui.components.logger.LogType;
+import org.bautista.cybersafe.ui.components.logger.Logger;
 import org.bautista.cybersafe.util.enctryption.util.KeyGenerator;
 
 public class Config {
@@ -23,11 +25,15 @@ public class Config {
 	public Config() {
 		try {
 			if (!configExists()) {
+				Logger.writeException("Config not detected.", LogType.CLIENT);
 				createConfig();
+				Logger.write("Config created.", LogType.CLIENT);
 				return;
 			}
 			loadProperties();
+			Logger.write("Config loaded.", LogType.CLIENT);
 		} catch (final IOException e) {
+			Logger.writeException("Error loading config.", LogType.CLIENT);
 			e.printStackTrace();
 		}
 	}

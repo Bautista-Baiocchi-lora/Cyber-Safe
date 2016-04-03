@@ -11,6 +11,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -21,12 +22,16 @@ import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
 import org.bautista.cybersafe.core.Engine;
+import org.bautista.cybersafe.ui.components.logger.LogType;
+import org.bautista.cybersafe.ui.components.logger.Logger;
+import org.bautista.cybersafe.ui.components.logger.LoggerPanel;
 import org.bautista.cybersafe.ui.components.panels.CreateUser;
 import org.bautista.cybersafe.ui.components.panels.LoginScreen;
+import org.bautista.cybersafe.ui.components.panels.safe.AccountCreatorScreen;
+import org.bautista.cybersafe.ui.components.panels.safe.AccountEditorScreen;
 import org.bautista.cybersafe.ui.components.panels.safe.AccountFilterScreen;
 import org.bautista.cybersafe.ui.components.panels.safe.AccountScroller;
 import org.bautista.cybersafe.ui.components.panels.safe.AccountViewerScreen;
-import org.bautista.cybersafe.ui.components.panels.safe.CreateAccountScreen;
 import org.bautista.cybersafe.ui.util.Scroller;
 import org.bautista.cybersafe.util.account.Account;
 
@@ -35,24 +40,29 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 	private LoginScreen loginScreen;
 	private AccountScroller accountScroller;
 	private CreateUser createUserScreen;
-	private CreateAccountScreen createAccountScreen;
+	private AccountCreatorScreen createAccountScreen;
 	private JMenuBar menu;
 	private JMenu account, file, user;
-	private JMenuItem info, logout, quit, createNewAccount;
+	private JMenuItem info, logout, quit, createNewAccount, about;
 	private AccountFilterScreen filterScreen;
 	private AccountViewerScreen viewAccountScreen;
+	private AccountEditorScreen editAccountScreen;
 	private final ArrayList<JComponent> currentView;
+	private final LoggerPanel logger;
 
 	public MainUI() {
 		super("Cyber Safe");
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		setLayout(new BorderLayout());
 		setResizable(false);
+		setIconImage(new ImageIcon(getClass().getResource("images/icon.png")).getImage());
 		setLocationRelativeTo(null);
+		logger = new LoggerPanel(new Logger());
 		currentView = new ArrayList<JComponent>();
 		confirmOnClose();
 		addMenuBar();
 		showLogin();
+		Logger.write("Cyber Safe started.", LogType.CLIENT);
 	}
 
 	@Override
@@ -96,6 +106,11 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 					}
 				}
 				break;
+			case "about":
+				JOptionPane.showMessageDialog(this,
+						"This application was created by Bautista Baiocchi-lora on 4/3/16. If you have any questions regarding the application feel free to contact Bautista through email at \"bautistabaiocchilora@gmail.com\"",
+						"Information", JOptionPane.OK_OPTION);
+				break;
 		}
 
 	}
@@ -120,6 +135,12 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 		logout.setActionCommand("log out");
 		logout.addActionListener(this);
 		user.add(logout);
+		file.addSeparator();
+		about = new JMenuItem("About", 'T');
+		about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, Event.CTRL_MASK));
+		about.setActionCommand("about");
+		about.addActionListener(this);
+		file.add(about);
 		file.addSeparator();
 		quit = new JMenuItem("Quit", 'e');
 		quit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, Event.CTRL_MASK));
@@ -177,22 +198,34 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 		setTitle(title);
 	}
 
-	public void showAccount(final Account account) {
+	public void showAccountEditor(final Account account) {
 		clearFrame();
-		viewAccountScreen = new AccountViewerScreen(account);
-		final Scroller scroller = new Scroller(viewAccountScreen, new Dimension(400, 300));
+		editAccountScreen = new AccountEditorScreen(account);
+		final Scroller scroller = new Scroller(editAccountScreen, new Dimension(400, 500));
 		currentView.add(scroller);
 		add(scroller, BorderLayout.CENTER);
 		refresh();
+		Logger.write("Opening account editor for account: " + account.getName(), LogType.CLIENT);
+	}
+
+	public void showAccount(final Account account) {
+		clearFrame();
+		viewAccountScreen = new AccountViewerScreen(account);
+		final Scroller scroller = new Scroller(viewAccountScreen, new Dimension(400, 500));
+		currentView.add(scroller);
+		add(scroller, BorderLayout.CENTER);
+		refresh();
+		Logger.write("Showing account: " + account.getName(), LogType.CLIENT);
 	}
 
 	public void showCreateAccount() {
 		clearFrame();
-		createAccountScreen = new CreateAccountScreen();
+		createAccountScreen = new AccountCreatorScreen();
 		final Scroller scroller = new Scroller(createAccountScreen, new Dimension(400, 500));
 		currentView.add(scroller);
 		add(scroller, BorderLayout.CENTER);
 		refresh();
+		Logger.write("Showing create account screen.", LogType.CLIENT);
 	}
 
 	public void showCreateUser() {
@@ -201,7 +234,10 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 		createUserScreen = new CreateUser();
 		currentView.add(createUserScreen);
 		add(createUserScreen);
+		add(logger, BorderLayout.PAGE_END);
+		currentView.add(logger);
 		refresh();
+		Logger.write("Showing create user screen.", LogType.CLIENT);
 	}
 
 	public void showLogin() {
@@ -209,8 +245,11 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 		enableUserMenu(false);
 		loginScreen = new LoginScreen();
 		currentView.add(loginScreen);
-		add(loginScreen);
+		add(loginScreen, BorderLayout.CENTER);
+		currentView.add(logger);
+		add(logger, BorderLayout.PAGE_END);
 		refresh();
+		Logger.write("Showing login screen.", LogType.CLIENT);
 	}
 
 	public void showSafe() {
@@ -223,7 +262,10 @@ public class MainUI extends JFrame implements WindowListener, ActionListener {
 		filterScreen = new AccountFilterScreen();
 		add(filterScreen, BorderLayout.CENTER);
 		currentView.add(filterScreen);
+		add(logger, BorderLayout.PAGE_END);
+		currentView.add(logger);
 		refresh();
+		Logger.write("Showing safe.", LogType.CLIENT);
 	}
 
 	public void updateAccountScroller() {

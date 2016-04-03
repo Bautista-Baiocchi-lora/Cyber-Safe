@@ -1,5 +1,6 @@
 package org.bautista.cybersafe.ui.components.panels;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -11,16 +12,16 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import org.bautista.cybersafe.core.Engine;
+import org.bautista.cybersafe.ui.util.Panel;
 import org.bautista.cybersafe.util.enctryption.util.KeyGenerator;
 import org.bautista.cybersafe.util.user.User;
 
-public class CreateUser extends JPanel implements ActionListener {
+public class CreateUser extends Panel implements ActionListener {
 	private final JTextField username, recoveryQuestion, recoveryAnswer;
 	private final JPasswordField password, confirmPassword, confirmKey, key;
 	private final JButton create, generateKey, back;
@@ -28,7 +29,6 @@ public class CreateUser extends JPanel implements ActionListener {
 			confirmKeyLabel, recoveryQuestionLabel, recoveryAnswerLabel;
 	private final GridBagConstraints constraints;
 	private final JOptionPane popUp;
-	private final char[] INVALID_CHARACTERS = { '"', '*', '/', ':', '<', '>', '?', '|', '\\' };
 
 	public CreateUser() {
 		setLayout(new GridBagLayout());
@@ -53,14 +53,43 @@ public class CreateUser extends JPanel implements ActionListener {
 		recoveryAnswerLabel = new JLabel("Recovery Answer: ", SwingConstants.TRAILING);
 		recoveryAnswer = new JTextField();
 		create = new JButton("Create Account");
-		create.addActionListener(this);
 		generateKey = new JButton("Generate Encryption Key");
 		generateKey.setActionCommand("generate key");
-		generateKey.addActionListener(this);
 		back = new JButton("Back");
-		back.addActionListener(this);
 
 		positionComponents();
+		setListeners();
+		setPreferredSize(new Dimension(450, 320));
+	}
+
+	private void setListeners() {
+		back.addActionListener(this);
+		generateKey.addActionListener(this);
+		create.addActionListener(this);
+	}
+
+	private boolean keysMatch() {
+		final char[] eKey = key.getPassword();
+		final char[] confirmEKey = confirmKey.getPassword();
+		if (Arrays.equals(eKey, confirmEKey)) {
+			return true;
+		}
+		JOptionPane.showMessageDialog(null,
+				"Your encryption keys do not match.",
+				"Warning!", JOptionPane.OK_OPTION);
+		return false;
+	}
+
+	private boolean passwordsMatch() {
+		final char[] pass = password.getPassword();
+		final char[] confirmPass = confirmPassword.getPassword();
+		if (Arrays.equals(pass, confirmPass)) {
+			return true;
+		}
+		JOptionPane.showMessageDialog(null,
+				"Your passwords do not match.",
+				"Warning!", JOptionPane.OK_OPTION);
+		return false;
 	}
 
 	@Override
@@ -68,14 +97,14 @@ public class CreateUser extends JPanel implements ActionListener {
 		final String command = e.getActionCommand().toLowerCase();
 		switch (command) {
 			case "create account":
-				if (usernameIsValid() && passwordIsValid() && keyIsValid()
-						&& recoveryQuestionIsValid() && recoveryAnsswerIsValid()) {
+				if (keysMatch() && passwordsMatch()) {
 					final User user = new User(username.getText(),
 							String.valueOf(password.getPassword()), recoveryQuestion.getText(),
 							recoveryAnswer.getText(),
 							String.valueOf(key.getPassword()));
-					Engine.getInstance().getUserManager().createUser(user);
-					Engine.getInstance().getUserManager().logIn(user);
+					if (Engine.getInstance().getUserManager().createUser(user)) {
+						Engine.getInstance().getUserManager().logIn(user);
+					}
 				}
 				break;
 			case "generate key":
@@ -101,59 +130,6 @@ public class CreateUser extends JPanel implements ActionListener {
 		constraints.weighty = yweight;
 		constraints.gridwidth = width;
 		add(comp, constraints);
-	}
-
-	private boolean containsInvalidCharacters(final String username) {
-		for (final char c : username.toCharArray()) {
-			for (final char element : INVALID_CHARACTERS) {
-				if (c == element) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	private boolean keyIsValid() {
-		boolean tooShort = true;
-		final char[] eKey = key.getPassword();
-		final char[] confirmEKey = confirmKey.getPassword();
-		if (eKey.length == 16) {
-			tooShort = false;
-			if (Arrays.equals(eKey, confirmEKey)) {
-				return true;
-			}
-			JOptionPane.showMessageDialog(this,
-					"Your Encryption Keys don't match. Remember, you can always have one automatically generated for you.",
-					"Warning!", JOptionPane.OK_OPTION);
-		}
-		if (tooShort) {
-			JOptionPane.showMessageDialog(this,
-					"Your Encryption Key is too short. Make sure it is exactly 16 characters long. Remember, you can always have one automatically generated for you.",
-					"Warning!", JOptionPane.OK_OPTION);
-
-		}
-		return false;
-	}
-
-	private boolean passwordIsValid() {
-		boolean tooShort = true;
-		final char[] pass = password.getPassword();
-		final char[] confirmPass = confirmPassword.getPassword();
-		if (pass.length > 6) {
-			tooShort = false;
-			if (Arrays.equals(pass, confirmPass)) {
-				return true;
-			}
-			JOptionPane.showMessageDialog(this,
-					"Your password's dont match.", "Warning!", JOptionPane.OK_OPTION);
-		}
-		if (tooShort) {
-			JOptionPane.showMessageDialog(this,
-					"Your password is too short. Make sure it is at least 6 characters long.",
-					"Warning!", JOptionPane.OK_OPTION);
-		}
-		return false;
 	}
 
 	private void positionComponents() {
@@ -182,52 +158,6 @@ public class CreateUser extends JPanel implements ActionListener {
 		addComponent(1, 7, 3, 1, .7, create);
 
 		addComponent(0, 8, 4, 1, .7, back);
-	}
-
-	private boolean recoveryAnsswerIsValid() {
-		if (recoveryAnswer.getText().length() >= 1) {
-			return true;
-		}
-		JOptionPane.showMessageDialog(this,
-				"You left your recovery answer blank! Make sure to make a password you will remember the answer to. It is the only way to recover your password.",
-				"Warning!", JOptionPane.OK_OPTION);
-		return false;
-	}
-
-	private boolean recoveryQuestionIsValid() {
-		if (recoveryQuestion.getText().length() >= 1) {
-			return true;
-		}
-		JOptionPane.showMessageDialog(this,
-				"You left your recovery question blank! Make sure to make a question you will remember the answer to. It is the only way to recover your password.",
-				"Warning!", JOptionPane.OK_OPTION);
-		return false;
-	}
-
-	private boolean usernameIsValid() {
-		boolean tooShort = true;
-		boolean invalidChar = true;
-		if (username.getText().length() >= 4) {
-			tooShort = false;
-			if (!containsInvalidCharacters(username.getText())) {
-				invalidChar = false;
-				if (Engine.getInstance().getUserManager().isNameAvaliable(username.getText())) {
-					return true;
-				}
-				JOptionPane.showMessageDialog(this, "That username is already taken.", "Warning!",
-						JOptionPane.OK_OPTION);
-			}
-		}
-		if (tooShort) {
-			JOptionPane.showMessageDialog(this,
-					"Your username must be at least 4 characters long.", "Warning!",
-					JOptionPane.OK_OPTION);
-		} else if (invalidChar) {
-			JOptionPane.showMessageDialog(this,
-					"Your username contains invalid characters. Please refrain from using the following characters in your username: ' \" ', ' \\ ', ' / ', ' * ', ' | ', ' ? ', ' : ', ' < ', ' > '",
-					"Warning!", JOptionPane.OK_OPTION);
-		}
-		return false;
 	}
 
 }

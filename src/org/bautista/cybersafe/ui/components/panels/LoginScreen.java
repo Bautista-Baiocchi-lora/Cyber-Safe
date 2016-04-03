@@ -11,15 +11,15 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import org.bautista.cybersafe.core.Engine;
+import org.bautista.cybersafe.ui.util.Panel;
 import org.bautista.cybersafe.util.user.User;
 
-public class LoginScreen extends JPanel implements ActionListener {
+public class LoginScreen extends Panel implements ActionListener {
 	private final JTextField username;
 	private final JPasswordField password, key;
 	private final JButton login, createAccount, recoverAccount;
@@ -37,9 +37,9 @@ public class LoginScreen extends JPanel implements ActionListener {
 		constraints.weighty = 1;
 		constraints.insets = new Insets(8, 5, 3, 3);
 
-		username = new JTextField("panda");
-		password = new JPasswordField("juan123");
-		key = new JPasswordField("1111111111111111");
+		username = new JTextField();
+		password = new JPasswordField();
+		key = new JPasswordField();
 		usernameLabel = new JLabel("Username: ", SwingConstants.TRAILING);
 		keyLabel = new JLabel("Encryption Key: ", SwingConstants.TRAILING);
 		passwordLabel = new JLabel("Password: ", SwingConstants.TRAILING);
@@ -51,7 +51,7 @@ public class LoginScreen extends JPanel implements ActionListener {
 
 		positionComponents();
 		setListeners();
-		setPreferredSize(new Dimension(300, 220));
+		setPreferredSize(new Dimension(400, 220));
 	}
 
 	@Override
