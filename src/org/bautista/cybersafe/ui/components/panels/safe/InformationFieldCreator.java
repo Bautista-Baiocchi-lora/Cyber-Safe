@@ -23,8 +23,6 @@ public class InformationFieldCreator extends Panel implements ActionListener {
 	private final JComboBox fieldType;
 	private final JLabel fieldTypeLabel;
 	private final JButton add;
-	private final JTextArea textArea;
-	private final JTextField textField;
 	private final String[] FIELD_TYPES = { "Normal Text Field",
 			"Large Text Field" };
 	private final Border BORDER = BorderFactory
@@ -34,11 +32,6 @@ public class InformationFieldCreator extends Panel implements ActionListener {
 		super();
 		setLayout(new GridLayout(3, 1, 10, 5));
 
-		textArea = new JTextArea();
-		textArea.setLineWrap(true);
-		textArea.setWrapStyleWord(true);
-		textField = new JTextField();
-		textField.setPreferredSize(new Dimension(367, 20));
 		fieldTypeLabel = new JLabel("Field Type", SwingConstants.LEADING);
 		fieldType = new JComboBox(FIELD_TYPES);
 		add = new JButton("Add Blank Field");
@@ -55,6 +48,8 @@ public class InformationFieldCreator extends Panel implements ActionListener {
 		boolean creator = getParent() instanceof AccountCreatorScreen;
 		switch (fieldType.getSelectedItem().toString().toLowerCase()) {
 			case "normal text field":
+				JTextField textField = new JTextField();
+				textField.setPreferredSize(new Dimension(367, 20));
 				if (creator) {
 					AccountCreatorScreen.getInstance().addComponent(
 							new InformationField(textField));
@@ -64,6 +59,9 @@ public class InformationFieldCreator extends Panel implements ActionListener {
 				}
 				break;
 			case "large text field":
+				JTextArea textArea = new JTextArea();
+				textArea.setLineWrap(true);
+				textArea.setWrapStyleWord(true);
 				if (creator) {
 					AccountCreatorScreen.getInstance()
 							.addComponent(new InformationField(
@@ -72,6 +70,7 @@ public class InformationFieldCreator extends Panel implements ActionListener {
 					AccountEditorScreen.getInstance().addComponent(new InformationField(
 							new Scroller(textArea, new Dimension(367, 30))));
 				}
+				textArea.setText("");
 				break;
 		}
 		refresh();

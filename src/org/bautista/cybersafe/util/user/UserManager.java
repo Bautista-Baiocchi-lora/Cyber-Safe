@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.swing.JOptionPane;
@@ -210,7 +209,7 @@ public class UserManager {
 	}
 
 	private boolean passwordIsValid(String password) {
-		if (password.length() > 6) {
+		if (password.length() >= 6) {
 			return true;
 		}
 		JOptionPane.showMessageDialog(null,
